@@ -1,8 +1,10 @@
 {{ define "content" }}
 <h1>Search Results</h1>
-<p><a href="/catalog/00000018">Book 18</a></p>
-<p><a href="/catalog/00000019">Book 19</a></p>
-<p><a href="/catalog/00000033">Book 33</a></p>
 
-<p>this is view file</p>
+<ul>
+{{ range . }}
+  <p>{{.Title}} <a href="/catalog/{{.Bib}}">link</a></p>
+{{ end }}
+</ul>
+
 {{ end }}

@@ -12,13 +12,17 @@ func home(values RouteValues, resp http.ResponseWriter, req *http.Request) {
 }
 
 func catSearch(values RouteValues, resp http.ResponseWriter, req *http.Request) {
-	// log.Printf("SEARCH")
-	// q1 := req.FormValue("q")
-	// log.Printf("%v", q1)
-	// q2 := req.URL.Query()
-	// log.Printf("%v", q2)
+	url := "http://localhost:8983/solr/bibdata"
+	cat := catalog.New(url)
+	records, err := cat.Search("")
+
 	s := NewSession(values, resp, req)
-	renderTemplate(s, "views/results.html", nil)
+	if err != nil {
+		renderError(s, "Error during search", err)
+	} else {
+		// log.Printf("%v", records)
+		renderTemplate(s, "views/results.html", records)
+	}
 }
 
 func catView(values RouteValues, resp http.ResponseWriter, req *http.Request) {
