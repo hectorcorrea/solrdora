@@ -2,6 +2,7 @@ package catalog
 
 import (
 	"gosiah/solr"
+	// "log"
 )
 
 type Catalog struct {
@@ -28,7 +29,7 @@ func (c Catalog) Get(id string) (BibRecord, error) {
 
 func DocToRecord(doc solr.Document) BibRecord {
 	id := doc.Value("id")
-	title := doc.Values("title_str")[0]
+	title := doc.FirstValue("title_str")
 	return BibRecord{Bib: id, Title: title}
 }
 
@@ -47,7 +48,6 @@ func (c Catalog) Search(q string) ([]BibRecord, error) {
 
 	records := []BibRecord{}
 	for _, doc := range r.Response.Documents {
-		// log.Printf("%v", doc)
 		record := DocToRecord(doc)
 		records = append(records, record)
 	}
