@@ -1,7 +1,6 @@
 package catalog
 
 import (
-	"fmt"
 	"gosiah/solr"
 )
 
@@ -28,26 +27,9 @@ func (c Catalog) Get(id string) (BibRecord, error) {
 }
 
 func DocToRecord(doc solr.Document) BibRecord {
-	id := fieldValue(doc, "id")
-	title := fieldValues(doc, "title_str")
+	id := doc.Value("id")
+	title := doc.Values("title_str")[0]
 	return BibRecord{Bib: id, Title: title}
-}
-
-func fieldValue(doc solr.Document, field string) string {
-	value, ok := doc[field].(string)
-	if ok {
-		return fmt.Sprintf("%s", value)
-	}
-	return ""
-}
-
-func fieldValues(doc solr.Document, field string) string {
-	values, ok := doc[field].([]interface{})
-	if ok && len(values) > 0 {
-		// get the first now for now
-		return fmt.Sprintf("%s", values[0])
-	}
-	return ""
 }
 
 func (c Catalog) Search(q string) ([]BibRecord, error) {
