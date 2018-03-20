@@ -41,8 +41,8 @@ func (s Solr) Search(params SearchParams) (SolrResponse, error) {
 	return r, err
 }
 
-func (s Solr) httpGet(urlstr string) (SolrResponse, error) {
-	r, err := http.Get(urlstr)
+func (s Solr) httpGet(url string) (SolrResponse, error) {
+	r, err := http.Get(url)
 	if err != nil {
 		return SolrResponse{}, err
 	}
