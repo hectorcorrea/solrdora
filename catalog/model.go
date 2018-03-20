@@ -10,10 +10,10 @@ type Catalog struct {
 }
 
 type BibRecord struct {
-	Bib      string
-	Title    string
-	Version  float64
-	Subjects []string
+	Bib     string
+	Title   string
+	Version float64
+	Authors []string
 }
 
 func New(coreUrl string) Catalog {
@@ -31,15 +31,15 @@ func (c Catalog) Get(id string) (BibRecord, error) {
 
 func DocToRecord(doc solr.Document) BibRecord {
 	id := doc.Value("id")
-	title := doc.FirstValue("title_str")
+	title := doc.Value("title")
 	version := doc.ValueFloat("_version_")
-	subjects := doc.Values("subjects_str")
-	return BibRecord{Bib: id, Title: title, Version: version, Subjects: subjects}
+	authors := doc.Values("authorsAll")
+	return BibRecord{Bib: id, Title: title, Version: version, Authors: authors}
 }
 
-func (c Catalog) Search(q string) ([]BibRecord, error) {
+func (c Catalog) Search(params solr.SearchParams) ([]BibRecord, error) {
 	s := solr.New(c.coreUrl)
-	r, err := s.Search("*", "")
+	r, err := s.Search(params)
 	if err != nil {
 		return []BibRecord{}, err
 	}

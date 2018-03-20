@@ -11,7 +11,7 @@ type Document map[string]interface{}
 func (d Document) Value(fieldName string) string {
 	// Casting to string would have been cleaner but it _only_ works for strings.
 	// Casting to interface{} allows us to fetch the value even if it is not
-	// a string (e.g a float). The downsie is that fmt.Sprintf() returns a
+	// a string (e.g a float). The downside is that fmt.Sprintf() returns a
 	// funny value for non-strings, but at least we fetch the value.
 	value, ok := d[fieldName].(interface{})
 	if ok {

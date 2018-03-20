@@ -2,8 +2,10 @@ package web
 
 import (
 	"gosiah/catalog"
+	"gosiah/solr"
 	"log"
 	"net/http"
+	"strings"
 )
 
 func home(values RouteValues, resp http.ResponseWriter, req *http.Request) {
@@ -14,13 +16,18 @@ func home(values RouteValues, resp http.ResponseWriter, req *http.Request) {
 func catSearch(values RouteValues, resp http.ResponseWriter, req *http.Request) {
 	url := "http://localhost:8983/solr/bibdata"
 	cat := catalog.New(url)
-	records, err := cat.Search("")
+	q := strings.Join(req.URL.Query()["q"], " ")
+	options := map[string]string{
+		"defType": "edismax",
+		"qf":      "authorsAll title^100",
+	}
+	params := solr.SearchParams{Q: q, Options: options}
+	records, err := cat.Search(params)
 
 	s := NewSession(values, resp, req)
 	if err != nil {
 		renderError(s, "Error during search", err)
 	} else {
-		// log.Printf("%v", records)
 		renderTemplate(s, "views/results.html", records)
 	}
 }

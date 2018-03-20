@@ -35,29 +35,16 @@ func (s Solr) Get(id, fl string) (Document, error) {
 	return r.Response.Documents[0], err
 }
 
-func (s Solr) Search(q, fl string) (SolrResponse, error) {
-	url := s.CoreUrl + "/select?" // q=*&fl=id,author"
-
-	if q != "" {
-		url += "q=" + q + "&"
-	}
-
-	if fl != "" {
-		url += "fl=" + fl + "&"
-	}
-
+func (s Solr) Search(params SearchParams) (SolrResponse, error) {
+	url := s.CoreUrl + "/select?" + params.toSolrQueryString()
 	r, err := s.httpGet(url)
 	return r, err
 }
 
-func (s Solr) httpGet(url string) (SolrResponse, error) {
-	r, err := http.Get(url)
+func (s Solr) httpGet(urlstr string) (SolrResponse, error) {
+	r, err := http.Get(urlstr)
 	if err != nil {
 		return SolrResponse{}, err
-	}
-
-	if r.StatusCode < 200 || r.StatusCode > 299 {
-		return SolrResponse{}, errors.New(fmt.Sprintf("HTTP Status %s", r.Status))
 	}
 
 	defer r.Body.Close()
@@ -66,7 +53,22 @@ func (s Solr) httpGet(url string) (SolrResponse, error) {
 		return SolrResponse{}, err
 	}
 
+	if r.StatusCode < 200 || r.StatusCode > 299 {
+		msg := fmt.Sprintf("HTTP Status: %s. ", r.Status)
+		if len(body) > 0 {
+			msg += fmt.Sprintf("Body: %s", body)
+		}
+		return SolrResponse{}, errors.New(msg)
+	}
+
 	var solrResponse SolrResponse
 	err = json.Unmarshal([]byte(body), &solrResponse)
+	if err == nil {
+		// HTTP request was successful but Solr reported an error.
+		if solrResponse.Error.Trace != "" {
+			msg := fmt.Sprintf("Solr Error. %#v", solrResponse.Error)
+			err = errors.New(msg)
+		}
+	}
 	return solrResponse, err
 }
