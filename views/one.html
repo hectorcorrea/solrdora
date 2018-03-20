@@ -1,4 +1,14 @@
 {{ define "content" }}
 <h1>{{.Title}}</h1>
+<h2>{{.Bib}}</h1>
+<p>{{.Version}}</p>
+
+<p>Subjects</p>
+<ul>
+  {{ range .Subjects }}
+  <li>{{.}}
+{{ end }}
+</ul>
+
 <p>this is view file</p>
 {{ end }}
