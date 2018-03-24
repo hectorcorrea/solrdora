@@ -10,9 +10,8 @@ import (
 var router Router
 
 func init() {
-	router.Add("GET", "/catalog/:bib", catView)
-	router.Add("GET", "/catalog", catSearch)
-	// router.Add("GET", "/catalog/", catSearchPost, "catalog2")
+	router.Add("GET", "/catalog/:bib", viewOne)
+	router.Add("GET", "/catalog", search)
 	router.Add("GET", "/", home)
 }
 
@@ -74,10 +73,9 @@ func loadTemplate(s Session, viewName string) (*template.Template, error) {
 	if err != nil {
 		renderError(s, fmt.Sprintf("Loading view %s", viewName), err)
 		return nil, err
-	} else {
-		log.Printf("Loaded template %s (%s)", viewName, "TODO s.req.URL.Path")
-		return t, nil
 	}
+	log.Printf("Loaded template %s (%s)", viewName, "TODO s.req.URL.Path")
+	return t, nil
 }
 
 func renderTemplate(s Session, viewName string, viewModel interface{}) {

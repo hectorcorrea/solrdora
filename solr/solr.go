@@ -16,41 +16,46 @@ func New(coreUrl string) Solr {
 	return Solr{CoreUrl: coreUrl}
 }
 
-func (s Solr) Get(id, fl string) (Document, error) {
+func (s Solr) Get(id string, fl []string) (Document, error) {
 	url := s.CoreUrl + "/select?"
-	url += "q=id:" + id + "&"
+	url += encode("q", "id:"+id)
+	url += encodeMany("fl", fl)
 
-	if fl != "" {
-		url += "fl=" + fl + "&"
-	}
-
-	r, err := s.httpGet(url)
+	raw, err := s.httpGet(url)
 	if err != nil {
 		return Document{}, err
 	}
 
-	if len(r.Response.Documents) == 0 {
-		return Document{}, errors.New("no doc found")
+	count := len(raw.Data.Documents)
+	if count == 0 {
+		msg := fmt.Sprintf("No document with ID %s was found", id)
+		return Document{}, errors.New(msg)
+	} else if count > 1 {
+		msg := fmt.Sprintf("More than one document with ID %s was found", id)
+		return Document{}, errors.New(msg)
 	}
-	return r.Response.Documents[0], err
+	return raw.Data.Documents[0], err
 }
 
-func (s Solr) Search(params SearchParams) (SolrResponse, error) {
+func (s Solr) Search(params SearchParams) (SearchResponse, error) {
 	url := s.CoreUrl + "/select?" + params.toSolrQueryString()
-	r, err := s.httpGet(url)
-	return r, err
+	raw, err := s.httpGet(url)
+	if err != nil {
+		return SearchResponse{}, err
+	}
+	return NewSearchResponse(params, raw), err
 }
 
-func (s Solr) httpGet(url string) (SolrResponse, error) {
+func (s Solr) httpGet(url string) (responseRaw, error) {
 	r, err := http.Get(url)
 	if err != nil {
-		return SolrResponse{}, err
+		return responseRaw{}, err
 	}
 
 	defer r.Body.Close()
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		return SolrResponse{}, err
+		return responseRaw{}, err
 	}
 
 	if r.StatusCode < 200 || r.StatusCode > 299 {
@@ -58,17 +63,17 @@ func (s Solr) httpGet(url string) (SolrResponse, error) {
 		if len(body) > 0 {
 			msg += fmt.Sprintf("Body: %s", body)
 		}
-		return SolrResponse{}, errors.New(msg)
+		return responseRaw{}, errors.New(msg)
 	}
 
-	var solrResponse SolrResponse
-	err = json.Unmarshal([]byte(body), &solrResponse)
+	var response responseRaw
+	err = json.Unmarshal([]byte(body), &response)
 	if err == nil {
 		// HTTP request was successful but Solr reported an error.
-		if solrResponse.Error.Trace != "" {
-			msg := fmt.Sprintf("Solr Error. %#v", solrResponse.Error)
+		if response.Error.Trace != "" {
+			msg := fmt.Sprintf("Solr Error. %#v", response.Error)
 			err = errors.New(msg)
 		}
 	}
-	return solrResponse, err
+	return response, err
 }

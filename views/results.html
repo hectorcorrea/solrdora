@@ -1,10 +1,20 @@
 {{ define "content" }}
 <h1>Search Results</h1>
 
+<p>Found: {{ .NumFound }}</p>
 <ul>
-{{ range . }}
+{{ range .BibRecords }}
   <p>{{.Title}} <a href="/catalog/{{.Bib}}">link</a></p>
 {{ end }}
 </ul>
 
+<h2>Facets</h2>
+<ul>
+  {{ range .Facets }}
+  <p><b>{{ .Name }}</b></p>
+    {{ range .Values }}
+      <p>{{ .Text }}, {{ .Count }}</p>
+    {{ end }}
+  {{ end }}
+</ul>
 {{ end }}

@@ -13,26 +13,34 @@ func home(values RouteValues, resp http.ResponseWriter, req *http.Request) {
 	renderTemplate(s, "views/index.html", nil)
 }
 
-func catSearch(values RouteValues, resp http.ResponseWriter, req *http.Request) {
-	url := "http://localhost:8983/solr/bibdata"
-	cat := catalog.New(url)
-	q := strings.Join(req.URL.Query()["q"], " ")
+func search(values RouteValues, resp http.ResponseWriter, req *http.Request) {
 	options := map[string]string{
 		"defType": "edismax",
 		"qf":      "authorsAll title^100",
 	}
-	params := solr.SearchParams{Q: q, Options: options}
-	records, err := cat.Search(params)
+	facet := solr.FacetField{Name: "subjects_str", Title: "Subjects"}
+	params := solr.SearchParams{
+		Q:       strings.Join(req.URL.Query()["q"], " "),
+		Rows:    20,
+		Start:   0,
+		Facets:  []solr.FacetField{facet},
+		Options: options,
+	}
+
+	url := "http://localhost:8983/solr/bibdata"
+	cat := catalog.New(url)
+	results, err := cat.Search(params)
+	log.Printf("Found: %d", results.NumFound)
 
 	s := NewSession(values, resp, req)
 	if err != nil {
 		renderError(s, "Error during search", err)
 	} else {
-		renderTemplate(s, "views/results.html", records)
+		renderTemplate(s, "views/results.html", results)
 	}
 }
 
-func catView(values RouteValues, resp http.ResponseWriter, req *http.Request) {
+func viewOne(values RouteValues, resp http.ResponseWriter, req *http.Request) {
 	bib := values["bib"]
 	log.Printf("fetching bib: %s", bib)
 

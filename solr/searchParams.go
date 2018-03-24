@@ -3,12 +3,13 @@ package solr
 import (
 	"fmt"
 	"net/url"
-	"strings"
 )
 
 type SearchParams struct {
-	Q  string
-	Fl []string
+	Q     string
+	Fl    []string
+	Rows  int
+	Start int
 	// fq		[]FilterQuery
 	Facets  []FacetField
 	Options map[string]string
@@ -17,24 +18,30 @@ type SearchParams struct {
 func (params SearchParams) toSolrQueryString() string {
 	qs := ""
 	if params.Q != "" {
-		qs += fmt.Sprintf("q=%s&", url.QueryEscape(params.Q))
+		qs += encode("q", params.Q)
 	}
 
-	if len(params.Fl) > 0 {
-		qs += fmt.Sprintf("fl=%s&", strings.Join(params.Fl, ","))
-	}
+	qs += encodeMany("fl", params.Fl)
 
 	if len(params.Facets) > 0 {
-		qs += "facets=on&"
+		qs += "facet=on&"
 		for _, f := range params.Facets {
-			qs += fmt.Sprintf("facet.field=%s&", url.QueryEscape(f.name))
-			qs += fmt.Sprintf("f.%s.facet.mincount=1&", url.QueryEscape(f.name))
+			qs += encode("facet.field", f.Name)
+			qs += fmt.Sprintf("f.%s.facet.mincount=1&", url.QueryEscape(f.Name))
 			// TODO account for facetLimit
 		}
 	}
 
+	if params.Start > 0 {
+		qs += fmt.Sprintf("start=%d&", params.Start)
+	}
+
+	if params.Rows > 0 {
+		qs += fmt.Sprintf("rows=%d&", params.Rows)
+	}
+
 	for k, v := range params.Options {
-		qs += fmt.Sprintf("%s=%s&", k, url.QueryEscape(v))
+		qs += encode(k, v)
 	}
 	return qs
 }

@@ -16,13 +16,21 @@ type BibRecord struct {
 	Authors []string
 }
 
+type SearchResults struct {
+	Params     solr.SearchParams
+	BibRecords []BibRecord
+	Facets     []solr.FacetField
+	NumFound   int
+	Start      int
+}
+
 func New(coreUrl string) Catalog {
 	return Catalog{coreUrl: coreUrl}
 }
 
 func (c Catalog) Get(id string) (BibRecord, error) {
 	s := solr.New(c.coreUrl)
-	doc, err := s.Get(id, "")
+	doc, err := s.Get(id, []string{})
 	if err != nil {
 		return BibRecord{}, err
 	}
@@ -37,23 +45,21 @@ func DocToRecord(doc solr.Document) BibRecord {
 	return BibRecord{Bib: id, Title: title, Version: version, Authors: authors}
 }
 
-func (c Catalog) Search(params solr.SearchParams) ([]BibRecord, error) {
+func (c Catalog) Search(params solr.SearchParams) (SearchResults, error) {
 	s := solr.New(c.coreUrl)
 	r, err := s.Search(params)
 	if err != nil {
-		return []BibRecord{}, err
+		return SearchResults{}, err
 	}
 
-	// log.Printf("num found:%d", r.Response.NumFound)
-	// log.Printf("params:")
-	// for key, value := range r.ResponseHeader.Params {
-	// 	log.Printf("\t%s = %s", key, value)
-	// }
-
-	records := []BibRecord{}
-	for _, doc := range r.Response.Documents {
+	results := SearchResults{
+		NumFound: r.NumFound,
+		Params:   params,
+		Facets:   r.Facets,
+	}
+	for _, doc := range r.Documents {
 		record := DocToRecord(doc)
-		records = append(records, record)
+		results.BibRecords = append(results.BibRecords, record)
 	}
-	return records, nil
+	return results, nil
 }
