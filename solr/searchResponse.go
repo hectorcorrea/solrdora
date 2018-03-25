@@ -1,6 +1,7 @@
 package solr
 
 type SearchResponse struct {
+	Q         string
 	NumFound  int
 	Start     int
 	Documents []Document

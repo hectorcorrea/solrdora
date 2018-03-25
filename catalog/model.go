@@ -17,11 +17,13 @@ type BibRecord struct {
 }
 
 type SearchResults struct {
+	Q          string
 	Params     solr.SearchParams
 	BibRecords []BibRecord
 	Facets     solr.Facets
 	NumFound   int
 	Start      int
+	Rows       int
 }
 
 func New(coreUrl string) Catalog {
@@ -56,6 +58,9 @@ func (c Catalog) Search(params solr.SearchParams) (SearchResults, error) {
 		NumFound: r.NumFound,
 		Params:   params,
 		Facets:   r.Facets,
+		Q:        params.Q,     // shortcuts
+		Start:    params.Start, // shortcuts
+		Rows:     params.Rows,  // shortcuts
 	}
 	for _, doc := range r.Documents {
 		record := DocToRecord(doc)

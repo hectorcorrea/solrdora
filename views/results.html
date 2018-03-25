@@ -1,7 +1,10 @@
 {{ define "content" }}
 <h1>Search Results</h1>
 
+<p>Searched for: <b>{{ .Q }}</b></p>
 <p>Found: {{ .NumFound }}</p>
+<p>Start: {{ .Start }}, Rows: {{ .Rows }}</p>
+
 <ul>
 {{ range .BibRecords }}
   <p>{{.Title}} <a href="/catalog/{{.Bib}}">link</a></p>
