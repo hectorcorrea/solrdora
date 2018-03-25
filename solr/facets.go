@@ -3,12 +3,15 @@ package solr
 import (
 	"fmt"
 	"net/url"
+	"strings"
 )
 
 type facetValue struct {
-	Text   string
-	Count  int
-	Active bool
+	Text      string
+	Count     int
+	Active    bool
+	AddUrl    string // URL to filter by this facet (set by the client)
+	RemoveUrl string // URL to remove this facet (set by the client)
 }
 
 type facetField struct {
@@ -56,6 +59,16 @@ func NewFacetsFromResponse(counts facetCountsRaw, fq FilterQueries) Facets {
 func (facets *Facets) Add(field, title string) {
 	facet := facetField{Field: field, Title: field}
 	*facets = append(*facets, facet)
+}
+
+func (facets Facets) SetAddRemoveUrls(baseUrl string) {
+	for _, facet := range facets {
+		for i, value := range facet.Values {
+			fqVal := "&fq=" + facet.Field + "|" + value.Text
+			facet.Values[i].AddUrl = baseUrl + fqVal
+			facet.Values[i].RemoveUrl = strings.Replace(baseUrl, fqVal, "", 1)
+		}
+	}
 }
 
 func (ff *facetField) addValue(text string, count int, active bool) {

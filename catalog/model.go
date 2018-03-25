@@ -2,7 +2,6 @@ package catalog
 
 import (
 	"gosiah/solr"
-	// "log"
 )
 
 type Catalog struct {
@@ -24,6 +23,9 @@ type SearchResults struct {
 	NumFound   int
 	Start      int
 	Rows       int
+	UserUrl    string
+	UserUrlNoQ string
+	RawUrl     string
 }
 
 func New(coreUrl string) Catalog {
@@ -48,21 +50,29 @@ func DocToRecord(doc solr.Document) BibRecord {
 }
 
 func (c Catalog) Search(params solr.SearchParams) (SearchResults, error) {
-	s := solr.New(c.coreUrl)
-	r, err := s.Search(params)
+	solr := solr.New(c.coreUrl)
+	resp, err := solr.Search(params)
 	if err != nil {
 		return SearchResults{}, err
 	}
 
+	// -- move this to its own SearchResults.method
+	resp.Facets.SetAddRemoveUrls("/catalog?" + resp.UserUrl)
+
 	results := SearchResults{
-		NumFound: r.NumFound,
-		Params:   params,
-		Facets:   r.Facets,
-		Q:        params.Q,     // shortcuts
-		Start:    params.Start, // shortcuts
-		Rows:     params.Rows,  // shortcuts
+		NumFound:   resp.NumFound,
+		Params:     params,
+		Facets:     resp.Facets,
+		Q:          params.Q,     // shortcuts
+		Start:      params.Start, // shortcuts
+		Rows:       params.Rows,  // shortcuts
+		UserUrl:    resp.UserUrl,
+		UserUrlNoQ: "/catalog?" + resp.ToUserQueryStringNoQ(),
+		RawUrl:     "/catalog?" + resp.UserUrl,
 	}
-	for _, doc := range r.Documents {
+	// --
+
+	for _, doc := range resp.Documents {
 		record := DocToRecord(doc)
 		results.BibRecords = append(results.BibRecords, record)
 	}

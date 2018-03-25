@@ -6,12 +6,16 @@ import (
 	"strings"
 )
 
-// Encodes a single value as a query string parameter.
-func encode(param, value string) string {
+func qsAdd(param, value string) string {
 	if value == "" {
 		return ""
 	}
-	return fmt.Sprintf("%s=%s&", param, url.QueryEscape(value))
+	return fmt.Sprintf("%s=%s&", param, value)
+}
+
+// Encodes a single value as a query string parameter.
+func encode(param, value string) string {
+	return qsAdd(param, url.QueryEscape(value))
 }
 
 func encodeDefault(param, value, defaultValue string) string {
@@ -31,5 +35,5 @@ func encodeMany(param string, values []string) string {
 	for _, value := range values {
 		valuesEnc = append(valuesEnc, url.QueryEscape(value))
 	}
-	return fmt.Sprintf("%s=%s&", param, strings.Join(valuesEnc, ","))
+	return qsAdd(param, strings.Join(valuesEnc, ","))
 }

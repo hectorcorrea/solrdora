@@ -1,9 +1,10 @@
 {{ define "content" }}
 <h1>Search Results</h1>
 
-<p>Searched for: <b>{{ .Q }}</b></p>
+<p>Searched for: <b>{{ .Q }}</b> <a href="{{ .UserUrlNoQ | safeURL }}">(remove q)</a> </p>
 <p>Found: {{ .NumFound }}</p>
 <p>Start: {{ .Start }}, Rows: {{ .Rows }}</p>
+<p>User URL: {{ .UserUrl }}</p>
 
 <ul>
 {{ range .BibRecords }}
@@ -16,11 +17,12 @@
   {{ range $facet := .Facets }}
   <p><b>{{ .Field }}</b></p>
     {{ range .Values }}
+      {{ $fqVal := concat3 $facet.Field "|" .Text }}
       <p>
         {{ if .Active }}
-        {{ .Text }}, {{ .Count }} <a href="/catalog?fq=TBD">(remove)</a>
+          {{ .Text }}, {{ .Count }} <a href="{{ .RemoveUrl | safeURL }}">(remove)</a>
         {{ else }}
-          <a href="/catalog?fq={{ $facet.Field }}|{{ .Text }}">{{ .Text }}, {{ .Count }} </a>
+          <a href="{{ .AddUrl | safeURL }}">{{ .Text }}, {{ .Count }} </a>
         {{ end }}
       </p>
     {{ end }}
