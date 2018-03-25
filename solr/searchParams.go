@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"net/url"
+	"strconv"
+	"strings"
 )
 
 type SearchParams struct {
@@ -14,6 +16,42 @@ type SearchParams struct {
 	FilterQueries FilterQueries
 	Facets        Facets
 	Options       map[string]string
+}
+
+// NewSearchParams from a query string
+// `qs` is typically req.URL.Query()
+func NewSearchParams(qs url.Values) SearchParams {
+	params := SearchParams{
+		Q:             qsToString("q", qs, "*"),
+		Rows:          qsToInt("rows", qs, 10),
+		Start:         qsToInt("start", qs, 0),
+		FilterQueries: NewFilterQueries(qs["fq"]),
+	}
+	return params
+}
+
+func qsToInt(key string, qs url.Values, defValue int) int {
+	if len(qs[key]) == 0 {
+		return defValue
+	}
+
+	i, err := strconv.Atoi(qs[key][0])
+	if err != nil {
+		return defValue
+	}
+	return i
+}
+
+func qsToString(key string, qs url.Values, defValue string) string {
+	if len(qs[key]) == 0 {
+		return defValue
+	}
+
+	value := strings.TrimSpace(qs[key][0])
+	if value == "" {
+		return defValue
+	}
+	return value
 }
 
 func (params SearchParams) toSolrQueryString() string {

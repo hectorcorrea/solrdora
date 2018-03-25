@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	// "net/url"
-	"strings"
 )
 
 func home(values RouteValues, resp http.ResponseWriter, req *http.Request) {
@@ -20,21 +19,13 @@ func search(values RouteValues, resp http.ResponseWriter, req *http.Request) {
 		"qf":      "authorsAll title^100",
 	}
 
-	fq := solr.NewFilterQueries(req.URL.Query()["fq"])
+	// fq := solr.NewFilterQueries(req.URL.Query()["fq"])
 	facets := solr.Facets{}
 	facets.Add("subjects_str", "Subjects")
-	params := solr.SearchParams{
-		Q:             strings.Join(req.URL.Query()["q"], " "),
-		Rows:          20,
-		Start:         0,
-		FilterQueries: fq,
-		Facets:        facets,
-		Options:       options,
-	}
 
-	if params.Q == "" {
-		params.Q = "*"
-	}
+	params := solr.NewSearchParams(req.URL.Query())
+	params.Facets = facets
+	params.Options = options
 
 	url := "http://localhost:8983/solr/bibdata"
 	cat := catalog.New(url)
