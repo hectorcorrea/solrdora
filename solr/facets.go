@@ -19,11 +19,20 @@ type facetField struct {
 
 type Facets []facetField
 
+func NewFacets(definitions map[string]string) Facets {
+	facets := Facets{}
+	for key, value := range definitions {
+		facet := facetField{Field: key, Title: value}
+		facets = append(facets, facet)
+	}
+	return facets
+}
+
 // Creates a new Facets object from the raw FacetCounts from Solr.
 //
 // `fc` contains the facet data as reported by Solr.
 // `fq` contains the `fq` values (field/value) passed to Solr during the search.
-func NewFacets(counts facetCountsRaw, fq FilterQueries) Facets {
+func NewFacetsFromResponse(counts facetCountsRaw, fq FilterQueries) Facets {
 	facets := Facets{}
 	for field, tokens := range counts.Fields {
 		// Tokens is an array in the form [value1, count1, value2, count2]

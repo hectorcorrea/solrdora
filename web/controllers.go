@@ -19,18 +19,15 @@ func search(values RouteValues, resp http.ResponseWriter, req *http.Request) {
 		"qf":      "authorsAll title^100",
 	}
 
-	// fq := solr.NewFilterQueries(req.URL.Query()["fq"])
-	facets := solr.Facets{}
-	facets.Add("subjects_str", "Subjects")
+	facets := map[string]string{
+		"subjects_str": "Subjects",
+	}
 
-	params := solr.NewSearchParams(req.URL.Query())
-	params.Facets = facets
-	params.Options = options
+	params := solr.NewSearchParams(req.URL.Query(), options, facets)
 
 	url := "http://localhost:8983/solr/bibdata"
 	cat := catalog.New(url)
 	results, err := cat.Search(params)
-	log.Printf("Found: %d", results.NumFound)
 
 	s := NewSession(values, resp, req)
 	if err != nil {

@@ -20,12 +20,16 @@ type SearchParams struct {
 
 // NewSearchParams from a query string
 // `qs` is typically req.URL.Query()
-func NewSearchParams(qs url.Values) SearchParams {
+func NewSearchParams(qs url.Values, options map[string]string,
+	facets map[string]string) SearchParams {
+
 	params := SearchParams{
 		Q:             qsToString("q", qs, "*"),
 		Rows:          qsToInt("rows", qs, 10),
 		Start:         qsToInt("start", qs, 0),
 		FilterQueries: NewFilterQueries(qs["fq"]),
+		Options:       options,
+		Facets:        NewFacets(facets),
 	}
 	return params
 }

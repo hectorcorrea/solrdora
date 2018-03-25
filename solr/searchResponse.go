@@ -13,7 +13,7 @@ func NewSearchResponse(params SearchParams, raw responseRaw) SearchResponse {
 		NumFound:  raw.Data.NumFound,
 		Start:     raw.Data.Start,
 		Documents: raw.Data.Documents,
-		Facets:    NewFacets(raw.FacetCounts, params.FilterQueries),
+		Facets:    NewFacetsFromResponse(raw.FacetCounts, params.FilterQueries),
 		Params:    params,
 	}
 	return r
