@@ -5,46 +5,52 @@ import (
 	"net/url"
 )
 
-type FacetValue struct {
+type facetValue struct {
 	Text   string
 	Count  int
 	Active bool
 }
 
-type FacetField struct {
+type facetField struct {
 	Field  string
 	Title  string
-	Values []FacetValue
+	Values []facetValue
 }
 
-type Facets []FacetField
+type Facets []facetField
 
-// Converts the raw FacetCounts from Solr into an array of our own
-// with a few extra data.
+// Creates a new Facets object from the raw FacetCounts from Solr.
 //
 // `fc` contains the facet data as reported by Solr.
 // `fq` contains the `fq` values (field/value) passed to Solr during the search.
-func NewFacets(fc facetCountsRaw, fq FilterQueries) Facets {
+func NewFacets(counts facetCountsRaw, fq FilterQueries) Facets {
 	facets := Facets{}
-	for field, tokens := range fc.Fields {
+	for field, tokens := range counts.Fields {
 		// Tokens is an array in the form [value1, count1, value2, count2]
 		// here we break it into an array of FacetValue that has specific
 		// value and count properties. We consider the FacetValue "active"
 		// if it was used in the "fq" parameters.
-		facet := FacetField{Field: field, Title: field}
+		facet := facetField{Field: field, Title: field}
 		for i := 0; i < len(tokens); i += 2 {
 			text := tokens[i].(string)
 			count := int(tokens[i+1].(float64))
+			// Mark the facet for this value as active if it is also present
+			// on the FilterQueries
 			active := fq.HasFieldValue(field, text)
-			facet.AddValue(text, count, active)
+			facet.addValue(text, count, active)
 		}
 		facets = append(facets, facet)
 	}
 	return facets
 }
 
-func (ff *FacetField) AddValue(text string, count int, active bool) {
-	value := FacetValue{
+func (facets *Facets) Add(field, title string) {
+	facet := facetField{Field: field, Title: field}
+	*facets = append(*facets, facet)
+}
+
+func (ff *facetField) addValue(text string, count int, active bool) {
+	value := facetValue{
 		Text:   text,
 		Count:  count,
 		Active: active,

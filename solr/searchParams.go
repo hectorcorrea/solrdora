@@ -2,6 +2,7 @@ package solr
 
 import (
 	"fmt"
+	"log"
 	"net/url"
 )
 
@@ -28,6 +29,8 @@ func (params SearchParams) toSolrQueryString() string {
 			qs += fmt.Sprintf("f.%s.facet.mincount=1&", url.QueryEscape(f.Field))
 			// TODO account for facetLimit
 		}
+	} else {
+		log.Printf("no facets")
 	}
 
 	if params.Start > 0 {

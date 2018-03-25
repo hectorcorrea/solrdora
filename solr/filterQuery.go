@@ -7,12 +7,12 @@ import (
 	"strings"
 )
 
-type FilterQuery struct {
+type filterQuery struct {
 	Field string
 	Value string
 }
 
-type FilterQueries []FilterQuery
+type FilterQueries []filterQuery
 
 // NewFilterQueries creates a new object from an array ov values.
 // values are the "fq=x|y" that came on the query string.
@@ -21,7 +21,7 @@ func NewFilterQueries(values []string) FilterQueries {
 	for _, value := range values {
 		tokens := strings.Split(value, "|")
 		if len(tokens) == 2 {
-			fq := FilterQuery{Field: tokens[0], Value: tokens[1]}
+			fq := filterQuery{Field: tokens[0], Value: tokens[1]}
 			fqs = append(fqs, fq)
 		}
 	}
@@ -45,7 +45,7 @@ func (fqs FilterQueries) toQueryString() string {
 	return str
 }
 
-func (fq FilterQuery) toQueryString() string {
+func (fq filterQuery) toQueryString() string {
 	// field:value, e.g. subject:"abc+xyz"
 	return fmt.Sprintf("%s:%s", fq.Field, url.QueryEscape("\""+fq.Value+"\""))
 }

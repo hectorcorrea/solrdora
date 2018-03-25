@@ -21,14 +21,14 @@ func search(values RouteValues, resp http.ResponseWriter, req *http.Request) {
 	}
 
 	fq := solr.NewFilterQueries(req.URL.Query()["fq"])
-	// fq := solr.FilterQuery{Field: "subjects_str", Value: "Education, Higher"}
-	facet := solr.FacetField{Field: "subjects_str", Title: "Subjects"}
+	facets := solr.Facets{}
+	facets.Add("subjects_str", "Subjects")
 	params := solr.SearchParams{
 		Q:             strings.Join(req.URL.Query()["q"], " "),
 		Rows:          20,
 		Start:         0,
 		FilterQueries: fq,
-		Facets:        []solr.FacetField{facet},
+		Facets:        facets,
 		Options:       options,
 	}
 
