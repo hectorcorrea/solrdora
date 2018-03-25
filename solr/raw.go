@@ -4,9 +4,11 @@
 package solr
 
 type headerRaw struct {
-	Status int               `json:"status"`
-	QTime  int               `json:"QTime"`
-	Params map[string]string `json:"params"`
+	Status int `json:"status"`
+	QTime  int `json:"QTime"`
+	// Use interface{} because some params are strings and
+	// others (e.g. fq) are arrays of strings.
+	Params map[string]interface{} `json:"params"`
 }
 
 type dataRaw struct {

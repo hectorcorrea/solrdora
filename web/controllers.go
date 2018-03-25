@@ -5,6 +5,7 @@ import (
 	"gosiah/solr"
 	"log"
 	"net/http"
+	// "net/url"
 	"strings"
 )
 
@@ -18,13 +19,21 @@ func search(values RouteValues, resp http.ResponseWriter, req *http.Request) {
 		"defType": "edismax",
 		"qf":      "authorsAll title^100",
 	}
-	facet := solr.FacetField{Name: "subjects_str", Title: "Subjects"}
+
+	fq := solr.NewFilterQueries(req.URL.Query()["fq"])
+	// fq := solr.FilterQuery{Field: "subjects_str", Value: "Education, Higher"}
+	facet := solr.FacetField{Field: "subjects_str", Title: "Subjects"}
 	params := solr.SearchParams{
-		Q:       strings.Join(req.URL.Query()["q"], " "),
-		Rows:    20,
-		Start:   0,
-		Facets:  []solr.FacetField{facet},
-		Options: options,
+		Q:             strings.Join(req.URL.Query()["q"], " "),
+		Rows:          20,
+		Start:         0,
+		FilterQueries: fq,
+		Facets:        []solr.FacetField{facet},
+		Options:       options,
+	}
+
+	if params.Q == "" {
+		params.Q = "*"
 	}
 
 	url := "http://localhost:8983/solr/bibdata"

@@ -10,10 +10,16 @@
 
 <h2>Facets</h2>
 <ul>
-  {{ range .Facets }}
-  <p><b>{{ .Name }}</b></p>
+  {{ range $facet := .Facets }}
+  <p><b>{{ .Field }}</b></p>
     {{ range .Values }}
-      <p>{{ .Text }}, {{ .Count }}</p>
+      <p>
+        {{ if .Active }}
+        {{ .Text }}, {{ .Count }} <a href="/catalog?fq=TBD">(remove)</a>
+        {{ else }}
+          <a href="/catalog?fq={{ $facet.Field }}|{{ .Text }}">{{ .Text }}, {{ .Count }} </a>
+        {{ end }}
+      </p>
     {{ end }}
   {{ end }}
 </ul>

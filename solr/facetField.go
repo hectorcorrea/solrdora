@@ -1,35 +1,67 @@
 package solr
 
+import (
+	"fmt"
+	"net/url"
+)
+
 type FacetValue struct {
-	Text  string
-	Count int
-	// remove_url string
-	// add_url string
+	Text   string
+	Count  int
+	Active bool
 }
 
 type FacetField struct {
-	Name   string
+	Field  string
 	Title  string
 	Values []FacetValue
 }
 
-// Converts the raw FacetCounts from Solr into
-// an array of our own FacetField type
-func NewFacetFields(fc facetCountsRaw) []FacetField {
-	facets := []FacetField{}
+type Facets []FacetField
+
+// Converts the raw FacetCounts from Solr into an array of our own
+// with a few extra data.
+//
+// `fc` contains the facet data as reported by Solr.
+// `fq` contains the `fq` values (field/value) passed to Solr during the search.
+func NewFacets(fc facetCountsRaw, fq FilterQueries) Facets {
+	facets := Facets{}
 	for field, tokens := range fc.Fields {
-		// tokens is an array in the form [value1, count1, value2, count2]
+		// Tokens is an array in the form [value1, count1, value2, count2]
 		// here we break it into an array of FacetValue that has specific
-		// value and count properties
-		values := []FacetValue{}
+		// value and count properties. We consider the FacetValue "active"
+		// if it was used in the "fq" parameters.
+		facet := FacetField{Field: field, Title: field}
 		for i := 0; i < len(tokens); i += 2 {
 			text := tokens[i].(string)
 			count := int(tokens[i+1].(float64))
-			value := FacetValue{Text: text, Count: count}
-			values = append(values, value)
+			active := fq.HasFieldValue(field, text)
+			facet.AddValue(text, count, active)
 		}
-		facet := FacetField{Name: field, Title: field, Values: values}
 		facets = append(facets, facet)
 	}
 	return facets
+}
+
+func (ff *FacetField) AddValue(text string, count int, active bool) {
+	value := FacetValue{
+		Text:   text,
+		Count:  count,
+		Active: active,
+	}
+	ff.Values = append(ff.Values, value)
+}
+
+func (facets Facets) toQueryString() string {
+	qs := ""
+	if len(facets) > 0 {
+		qs += encode("facet", "on")
+		for _, facet := range facets {
+			qs += encode("facet.field", facet.Field)
+			min_count := fmt.Sprintf("f.%s.facet.mincount", url.QueryEscape(facet.Field))
+			qs += encode(min_count, "1")
+			// TODO account for facetLimit
+		}
+	}
+	return qs
 }

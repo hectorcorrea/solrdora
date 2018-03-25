@@ -4,7 +4,7 @@ type SearchResponse struct {
 	NumFound  int
 	Start     int
 	Documents []Document
-	Facets    []FacetField
+	Facets    Facets
 	Params    SearchParams
 }
 
@@ -13,7 +13,7 @@ func NewSearchResponse(params SearchParams, raw responseRaw) SearchResponse {
 		NumFound:  raw.Data.NumFound,
 		Start:     raw.Data.Start,
 		Documents: raw.Data.Documents,
-		Facets:    NewFacetFields(raw.FacetCounts),
+		Facets:    NewFacets(raw.FacetCounts, params.FilterQueries),
 		Params:    params,
 	}
 	return r

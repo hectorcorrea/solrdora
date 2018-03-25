@@ -6,28 +6,26 @@ import (
 )
 
 type SearchParams struct {
-	Q     string
-	Fl    []string
-	Rows  int
-	Start int
-	// fq		[]FilterQuery
-	Facets  []FacetField
-	Options map[string]string
+	Q             string
+	Fl            []string
+	Rows          int
+	Start         int
+	FilterQueries FilterQueries
+	Facets        Facets
+	Options       map[string]string
 }
 
 func (params SearchParams) toSolrQueryString() string {
 	qs := ""
-	if params.Q != "" {
-		qs += encode("q", params.Q)
-	}
-
+	qs += encodeDefault("q", params.Q, "*")
 	qs += encodeMany("fl", params.Fl)
+	qs += params.FilterQueries.toQueryString()
 
 	if len(params.Facets) > 0 {
 		qs += "facet=on&"
 		for _, f := range params.Facets {
-			qs += encode("facet.field", f.Name)
-			qs += fmt.Sprintf("f.%s.facet.mincount=1&", url.QueryEscape(f.Name))
+			qs += encode("facet.field", f.Field)
+			qs += fmt.Sprintf("f.%s.facet.mincount=1&", url.QueryEscape(f.Field))
 			// TODO account for facetLimit
 		}
 	}

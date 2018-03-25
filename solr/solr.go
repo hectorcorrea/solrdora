@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 )
 
@@ -28,8 +29,7 @@ func (s Solr) Get(id string, fl []string) (Document, error) {
 
 	count := len(raw.Data.Documents)
 	if count == 0 {
-		msg := fmt.Sprintf("No document with ID %s was found", id)
-		return Document{}, errors.New(msg)
+		return Document{}, nil
 	} else if count > 1 {
 		msg := fmt.Sprintf("More than one document with ID %s was found", id)
 		return Document{}, errors.New(msg)
@@ -47,6 +47,7 @@ func (s Solr) Search(params SearchParams) (SearchResponse, error) {
 }
 
 func (s Solr) httpGet(url string) (responseRaw, error) {
+	log.Printf("Solr URL: %s", url)
 	r, err := http.Get(url)
 	if err != nil {
 		return responseRaw{}, err
@@ -65,6 +66,8 @@ func (s Solr) httpGet(url string) (responseRaw, error) {
 		}
 		return responseRaw{}, errors.New(msg)
 	}
+
+	// log.Printf("Body: %s", body)
 
 	var response responseRaw
 	err = json.Unmarshal([]byte(body), &response)

@@ -19,7 +19,7 @@ type BibRecord struct {
 type SearchResults struct {
 	Params     solr.SearchParams
 	BibRecords []BibRecord
-	Facets     []solr.FacetField
+	Facets     solr.Facets
 	NumFound   int
 	Start      int
 }
