@@ -1,6 +1,13 @@
 {{ define "content" }}
 <h1>Search Results</h1>
 
+<form action="/catalog" method="GET">
+
+  <input type="text" id="q" name="q" value="{{ .Q }}" placeholder="enter text" autofocus/>
+  <button type="submit">Search</button>
+
+</form>
+
 <p>Searched for: <b>{{ .Q }}</b> <a href="{{ safeURL .UserUrlNoQ }}">(remove q)</a> </p>
 <p>Found: {{ .NumFound }}</p>
 <p>Start: {{ .Start }}, Rows: {{ .Rows }}</p>
