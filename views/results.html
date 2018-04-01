@@ -2,13 +2,35 @@
 <h1>Search Results</h1>
 
 <form action="/catalog" method="GET">
-
   <input type="text" id="q" name="q" value="{{ .Q }}" placeholder="enter text" autofocus/>
+  <div style="display:none;" id="facets_form">
+    {{ range $facet := .Facets }}
+      {{ range .Values }}
+        {{ if .Active }}
+          <input type="text" id="fq" name="fq" value="{{ $facet.Field }}|{{ .Text }}" />
+        {{ end }}
+      {{ end }}
+    {{ end }}
+  </div>
   <button type="submit">Search</button>
-
 </form>
 
-<p>Searched for: <b>{{ .Q }}</b> <a href="{{ safeURL .UserUrlNoQ }}">(remove q)</a> </p>
+<a href="{{ .PrevPageUrl }}">PREV</a>
+<a href="{{ .NextPageUrl }}">NEXT</a>
+
+<p>Searched for:
+  <b>{{ .Q }}</b>
+  {{ if ne .Q "*" }}
+    <a href="{{ safeURL .ToUrlNoQ }}"> (remove)</a>
+  {{ end }}
+  {{ range $facet := .Facets }}
+    {{ range .Values }}
+      {{ if .Active }}
+        {{ $facet.Title }} > {{ .Text }} <a href="{{ safeURL .RemoveUrl }}">(remove)</a>
+      {{ end }}
+    {{ end }}
+  {{ end }}
+</p>
 <p>Found: {{ .NumFound }}</p>
 <p>Start: {{ .Start }}, Rows: {{ .Rows }}</p>
 

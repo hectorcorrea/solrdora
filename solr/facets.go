@@ -36,7 +36,7 @@ func NewFacets(definitions map[string]string) Facets {
 }
 
 func (facets *Facets) Add(field, title string) {
-	facet := facetField{Field: field, Title: field}
+	facet := facetField{Field: field, Title: title}
 	*facets = append(*facets, facet)
 }
 
@@ -63,11 +63,11 @@ func (ff *facetField) addValue(text string, count int, active bool) {
 func (facets Facets) toQueryString() string {
 	qs := ""
 	if len(facets) > 0 {
-		qs += qsAdd("facet", "on")
+		qs += QsAdd("facet", "on")
 		for _, f := range facets {
-			qs += qsAdd("facet.field", f.Field)
+			qs += QsAdd("facet.field", f.Field)
 			min_count := fmt.Sprintf("f.%s.facet.mincount", url.QueryEscape(f.Field))
-			qs += qsAdd(min_count, "1")
+			qs += QsAdd(min_count, "1")
 			// TODO account for facetLimit
 		}
 	}

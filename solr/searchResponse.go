@@ -1,6 +1,6 @@
 package solr
 
-import "log"
+// import "log"
 
 type SearchResponse struct {
 	Params    SearchParams
@@ -54,20 +54,4 @@ func (r SearchResponse) facetsFromResponse(counts facetCountsRaw) Facets {
 		facets = append(facets, facet)
 	}
 	return facets
-}
-
-func (r SearchResponse) ToQueryString(q bool) string {
-	qs := ""
-	if q {
-		qs += qsAddRaw("q", r.Params.Q)
-	}
-	for _, facet := range r.Facets {
-		for _, value := range facet.Values {
-			if value.Active {
-				qs += qsAddRaw("fq", facet.Field+"|"+value.Text)
-			}
-		}
-	}
-	log.Printf("qs= %s", qs)
-	return qs
 }

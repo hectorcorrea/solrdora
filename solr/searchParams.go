@@ -22,9 +22,9 @@ func NewSearchParams(qs url.Values, options map[string]string,
 	facets map[string]string) SearchParams {
 
 	params := SearchParams{
-		Q:             qsGet(qs, "q", "*"),
-		Rows:          qsGetInt(qs, "rows", 10),
-		Start:         qsGetInt(qs, "start", 0),
+		Q:             QsGet(qs, "q", "*"),
+		Rows:          QsGetInt(qs, "rows", 10),
+		Start:         QsGetInt(qs, "start", 0),
 		FilterQueries: NewFilterQueries(qs["fq"]),
 		Options:       options,
 		Facets:        NewFacets(facets),
@@ -34,21 +34,21 @@ func NewSearchParams(qs url.Values, options map[string]string,
 
 func (params SearchParams) toSolrQueryString() string {
 	qs := ""
-	qs += qsAddDefault("q", params.Q, "*")
-	qs += qsAddMany("fl", params.Fl)
+	qs += QsAddDefault("q", params.Q, "*")
+	qs += QsAddMany("fl", params.Fl)
 	qs += params.FilterQueries.toQueryString()
 	qs += params.Facets.toQueryString()
 
 	if params.Start > 0 {
-		qs += qsAddInt("start", params.Start)
+		qs += QsAddInt("start", params.Start)
 	}
 
 	if params.Rows > 0 {
-		qs += qsAddInt("rows", params.Rows)
+		qs += QsAddInt("rows", params.Rows)
 	}
 
 	for k, v := range params.Options {
-		qs += qsAdd(k, v)
+		qs += QsAdd(k, v)
 	}
 	return qs
 }
