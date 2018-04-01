@@ -1,11 +1,7 @@
 package solr
 
 import (
-	"fmt"
-	"log"
 	"net/url"
-	"strconv"
-	"strings"
 )
 
 type SearchParams struct {
@@ -19,14 +15,16 @@ type SearchParams struct {
 }
 
 // NewSearchParams from a query string
-// `qs` is typically req.URL.Query()
+// 	`qs` is typically req.URL.Query()
+// 	`options` to pass to Solr (e.g. defType: "edismax")
+// 	`facets` to request from Solr (e.g. fieldName: "Field Name")
 func NewSearchParams(qs url.Values, options map[string]string,
 	facets map[string]string) SearchParams {
 
 	params := SearchParams{
-		Q:             qsToString("q", qs, "*"),
-		Rows:          qsToInt("rows", qs, 10),
-		Start:         qsToInt("start", qs, 0),
+		Q:             qsGet(qs, "q", "*"),
+		Rows:          qsGetInt(qs, "rows", 10),
+		Start:         qsGetInt(qs, "start", 0),
 		FilterQueries: NewFilterQueries(qs["fq"]),
 		Options:       options,
 		Facets:        NewFacets(facets),
@@ -34,53 +32,19 @@ func NewSearchParams(qs url.Values, options map[string]string,
 	return params
 }
 
-func qsToInt(key string, qs url.Values, defValue int) int {
-	if len(qs[key]) == 0 {
-		return defValue
-	}
-
-	i, err := strconv.Atoi(qs[key][0])
-	if err != nil {
-		return defValue
-	}
-	return i
-}
-
-func qsToString(key string, qs url.Values, defValue string) string {
-	if len(qs[key]) == 0 {
-		return defValue
-	}
-
-	value := strings.TrimSpace(qs[key][0])
-	if value == "" {
-		return defValue
-	}
-	return value
-}
-
 func (params SearchParams) toSolrQueryString() string {
 	qs := ""
 	qs += encodeDefault("q", params.Q, "*")
 	qs += encodeMany("fl", params.Fl)
 	qs += params.FilterQueries.toQueryString()
-
-	if len(params.Facets) > 0 {
-		qs += "facet=on&"
-		for _, f := range params.Facets {
-			qs += encode("facet.field", f.Field)
-			qs += fmt.Sprintf("f.%s.facet.mincount=1&", url.QueryEscape(f.Field))
-			// TODO account for facetLimit
-		}
-	} else {
-		log.Printf("no facets")
-	}
+	qs += params.Facets.toQueryString()
 
 	if params.Start > 0 {
-		qs += fmt.Sprintf("start=%d&", params.Start)
+		qs += encodeInt("start", params.Start)
 	}
 
 	if params.Rows > 0 {
-		qs += fmt.Sprintf("rows=%d&", params.Rows)
+		qs += encodeInt("rows", params.Rows)
 	}
 
 	for k, v := range params.Options {
