@@ -37,6 +37,16 @@ func (fqs FilterQueries) HasFieldValue(field, value string) bool {
 	return false
 }
 
+func (fqs FilterQueries) FieldValues(field string) []string {
+	values := []string{}
+	for _, fq := range fqs {
+		if fq.Field == field {
+			values = append(values, fq.Value)
+		}
+	}
+	return values
+}
+
 func (fqs FilterQueries) toQueryString() string {
 	str := ""
 	for _, fq := range fqs {
