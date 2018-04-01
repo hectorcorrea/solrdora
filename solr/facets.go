@@ -63,11 +63,11 @@ func (ff *facetField) addValue(text string, count int, active bool) {
 func (facets Facets) toQueryString() string {
 	qs := ""
 	if len(facets) > 0 {
-		qs += encode("facet", "on")
+		qs += qsAdd("facet", "on")
 		for _, f := range facets {
-			qs += encode("facet.field", f.Field)
+			qs += qsAdd("facet.field", f.Field)
 			min_count := fmt.Sprintf("f.%s.facet.mincount", url.QueryEscape(f.Field))
-			qs += encode(min_count, "1")
+			qs += qsAdd(min_count, "1")
 			// TODO account for facetLimit
 		}
 	}

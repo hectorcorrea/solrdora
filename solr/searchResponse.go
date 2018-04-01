@@ -59,12 +59,12 @@ func (r SearchResponse) facetsFromResponse(counts facetCountsRaw) Facets {
 func (r SearchResponse) ToQueryString(q bool) string {
 	qs := ""
 	if q {
-		qs += qsAdd("q", r.Params.Q)
+		qs += qsAddRaw("q", r.Params.Q)
 	}
 	for _, facet := range r.Facets {
 		for _, value := range facet.Values {
 			if value.Active {
-				qs += qsAdd("fq", facet.Field+"|"+value.Text)
+				qs += qsAddRaw("fq", facet.Field+"|"+value.Text)
 			}
 		}
 	}

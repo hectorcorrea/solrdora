@@ -34,21 +34,21 @@ func NewSearchParams(qs url.Values, options map[string]string,
 
 func (params SearchParams) toSolrQueryString() string {
 	qs := ""
-	qs += encodeDefault("q", params.Q, "*")
-	qs += encodeMany("fl", params.Fl)
+	qs += qsAddDefault("q", params.Q, "*")
+	qs += qsAddMany("fl", params.Fl)
 	qs += params.FilterQueries.toQueryString()
 	qs += params.Facets.toQueryString()
 
 	if params.Start > 0 {
-		qs += encodeInt("start", params.Start)
+		qs += qsAddInt("start", params.Start)
 	}
 
 	if params.Rows > 0 {
-		qs += encodeInt("rows", params.Rows)
+		qs += qsAddInt("rows", params.Rows)
 	}
 
 	for k, v := range params.Options {
-		qs += encode(k, v)
+		qs += qsAdd(k, v)
 	}
 	return qs
 }

@@ -19,8 +19,8 @@ func New(coreUrl string) Solr {
 
 func (s Solr) Get(id string, fl []string) (Document, error) {
 	url := s.CoreUrl + "/select?"
-	url += encode("q", "id:"+id)
-	url += encodeMany("fl", fl)
+	url += qsAdd("q", "id:"+id)
+	url += qsAddMany("fl", fl)
 
 	raw, err := s.httpGet(url)
 	if err != nil {

@@ -8,7 +8,7 @@ import (
 )
 
 // Adds a parameter and its value to a query string
-func qsAdd(param, value string) string {
+func qsAddRaw(param, value string) string {
 	if value == "" {
 		return ""
 	}
@@ -42,30 +42,30 @@ func qsGetInt(qs url.Values, key string, defValue int) int {
 }
 
 // Encodes a single value as a query string parameter.
-func encode(param, value string) string {
-	return qsAdd(param, url.QueryEscape(value))
+func qsAdd(param, value string) string {
+	return qsAddRaw(param, url.QueryEscape(value))
 }
 
-func encodeInt(param string, value int) string {
-	return qsAdd(param, fmt.Sprintf("%d", value))
+func qsAddInt(param string, value int) string {
+	return qsAddRaw(param, fmt.Sprintf("%d", value))
 }
 
-func encodeDefault(param, value, defaultValue string) string {
+func qsAddDefault(param, value, defaultValue string) string {
 	if value == "" {
-		return encode(param, defaultValue)
+		return qsAdd(param, defaultValue)
 	}
-	return encode(param, value)
+	return qsAdd(param, value)
 }
 
 // Encodes an array of values as a query string parameter (the values
 // in the return value are separated by commas).
-func encodeMany(param string, values []string) string {
+func qsAddMany(param string, values []string) string {
 	if len(values) == 0 {
 		return ""
 	}
-	valuesEnc := []string{}
+	encodedValues := []string{}
 	for _, value := range values {
-		valuesEnc = append(valuesEnc, url.QueryEscape(value))
+		encodedValues = append(encodedValues, url.QueryEscape(value))
 	}
-	return qsAdd(param, strings.Join(valuesEnc, ","))
+	return qsAddRaw(param, strings.Join(encodedValues, ","))
 }
