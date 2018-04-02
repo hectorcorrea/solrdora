@@ -1,7 +1,7 @@
 package catalog
 
 import (
-	"gosiah/solr"
+	"github.com/hectorcorrea/solr"
 )
 
 type Catalog struct {

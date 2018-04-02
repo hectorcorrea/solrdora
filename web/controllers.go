@@ -1,9 +1,8 @@
 package web
 
 import (
+	"github.com/hectorcorrea/solr"
 	"gosiah/catalog"
-	"gosiah/solr"
-	"log"
 	"net/http"
 )
 
