@@ -6,6 +6,7 @@ import (
 )
 
 var router Router
+var settings Settings
 
 func init() {
 	router.Add("GET", "/catalog/:bib", viewOne)
@@ -13,8 +14,15 @@ func init() {
 	router.Add("GET", "/", home)
 }
 
-func StartWebServer(address string) {
-	log.Printf("Listening for requests at http://%s", address)
+func StartWebServer(settingsFile string) {
+	var err error
+	settings, err = LoadSettings(settingsFile)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Printf("Loaded settings from: %s", settingsFile)
+	log.Printf("Listening for requests at http://%s", settings.ServerAddress)
 
 	fs := http.FileServer(http.Dir("./public"))
 	http.Handle("/favicon.ico", fs)
@@ -23,7 +31,7 @@ func StartWebServer(address string) {
 	http.HandleFunc("/catalog", dispacher)
 	http.HandleFunc("/", dispacher)
 
-	err := http.ListenAndServe(address, nil)
+	err = http.ListenAndServe(settings.ServerAddress, nil)
 	if err != nil {
 		log.Fatal("Failed to start the web server: ", err)
 	}

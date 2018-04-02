@@ -14,19 +14,13 @@ func home(values RouteValues, resp http.ResponseWriter, req *http.Request) {
 }
 
 func search(values RouteValues, resp http.ResponseWriter, req *http.Request) {
-	options := map[string]string{
-		"defType": "edismax",
-		"qf":      "authorsAll title^100",
-	}
 
-	facets := map[string]string{
-		"subjects_str": "Subjects",
-	}
+	params := solr.NewSearchParams(
+		req.URL.Query(),
+		settings.SolrOptions,
+		settings.SolrFacets)
 
-	params := solr.NewSearchParams(req.URL.Query(), options, facets)
-
-	url := "http://localhost:8983/solr/bibdata"
-	cat := catalog.New(url)
+	cat := catalog.New(settings.SolrCoreUrl)
 	results, err := cat.Search(params)
 
 	s := NewSession(values, resp, req)

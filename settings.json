@@ -1,0 +1,12 @@
+{
+  "serverAddress": "localhost:9001",
+  "solrCoreUrl": "http://localhost:8983/solr/bibdata",
+  "solrOptions" : {
+    "defType": "edismax",
+    "qf": "authorsAll title^100"
+  },
+  "solrFacets": {
+    "subjects_str": "Subjects",
+    "publisher_str": "Publisher"
+  }
+}

@@ -1,33 +1,33 @@
 package main
 
 import (
+	"fmt"
 	"gosiah/web"
-	// "log"
-	// "reflect"
+	"log"
+	"os"
 )
 
 func main() {
+	if len(os.Args) < 2 {
+		displayHelp()
+	}
+	settingsFile := os.Args[1]
+	web.StartWebServer(settingsFile)
+}
 
-	// var s interface{}
-	// s = "hello"
-	//
-	// var a []interface{}
-	// a = append(a, "hello")
-	// a = append(a, "world")
-	//
-	// log.Printf("%T", a)
-	// log.Printf("%T", s)
-	//
-	// log.Printf("typeOf() %s", reflect.TypeOf(a))
-	// log.Printf("kind: %s", reflect.TypeOf(a).Kind())
-	// log.Printf("slice? %s", reflect.TypeOf(a).Kind() == reflect.Slice)
-
-	// t := reflect.ValueOf(s).Kind()
-	// log.Printf("%s", t)
-	// log.Printf("%v", t == "slice")
-
-	// return
-
-	address := "localhost:9001"
-	web.StartWebServer(address)
+func displayHelp() {
+	sample := `{
+	  "serverUrl": "localhost:9001",
+	  "solrCoreUrl": "http://localhost:8983/solr/bibdata",
+	  "solrOptions" : {
+	    "defType": "edismax",
+	    "qf": "authorsAll title^100"
+	  },
+	  "solrFacets": {
+	    "subjects_str": "Subjects",
+	    "publisher_str": "Publisher"
+	  }
+	}`
+	msg := fmt.Sprintf("Must indicate a settings.json file with an structure like this:\r\n%s", sample)
+	log.Fatal(msg)
 }
