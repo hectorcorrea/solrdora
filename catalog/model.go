@@ -12,9 +12,9 @@ func New(coreUrl string) Catalog {
 	return Catalog{coreUrl: coreUrl}
 }
 
-func (c Catalog) Get(id string) (BibRecord, error) {
+func (c Catalog) Get(id string, fl []string) (BibRecord, error) {
 	s := solr.New(c.coreUrl)
-	doc, err := s.Get(id, []string{})
+	doc, err := s.Get(id, fl)
 	if err != nil {
 		return BibRecord{}, err
 	}

@@ -9,7 +9,7 @@ var router Router
 var settings Settings
 
 func init() {
-	router.Add("GET", "/catalog/:bib", viewOne)
+	router.Add("GET", "/catalog/:id", viewOne)
 	router.Add("GET", "/catalog", search)
 	router.Add("GET", "/", home)
 }
