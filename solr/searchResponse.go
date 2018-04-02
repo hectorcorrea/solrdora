@@ -1,25 +1,62 @@
 package solr
 
-// import "log"
-
 type SearchResponse struct {
-	Params    SearchParams
-	Q         string
-	NumFound  int
-	Start     int
-	Documents []Document
-	Facets    Facets
+	Params      SearchParams
+	Q           string
+	NumFound    int
+	Start       int
+	Rows        int
+	Documents   []Document
+	Facets      Facets
+	Url         string // URL to execute this search
+	UrlNoQ      string // URL to execute this response without the Q parameter
+	NextPageUrl string // URL to get the next batch of results
+	PrevPageUrl string // URL to get the previous batch of results
 }
 
 func NewSearchResponse(params SearchParams, raw responseRaw) SearchResponse {
 	r := SearchResponse{
 		Params:    params,
+		Q:         params.Q,
 		NumFound:  raw.Data.NumFound,
 		Start:     raw.Data.Start,
+		Rows:      params.Rows,
 		Documents: raw.Data.Documents,
 	}
+
 	r.Facets = r.facetsFromResponse(raw.FacetCounts)
+
+	r.Url = r.toQueryString(r.Q, r.Start)
+	r.UrlNoQ = r.toQueryString("", r.Start)
+	r.NextPageUrl = r.toQueryString(r.Q, r.Start+r.Rows)
+	r.PrevPageUrl = r.toQueryString(r.Q, r.Start-r.Rows)
+
 	return r
+}
+
+func (r SearchResponse) toQueryString(q string, start int) string {
+	qs := ""
+
+	if q != "" {
+		qs += QsAddRaw("q", q)
+	}
+
+	for _, facet := range r.Facets {
+		for _, value := range facet.Values {
+			if value.Active {
+				qs += QsAddRaw("fq", facet.Field+"|"+value.Text)
+			}
+		}
+	}
+
+	if start > 0 {
+		qs += QsAddInt("start", start)
+	}
+
+	if r.Rows != 10 {
+		qs += QsAddInt("rows", r.Rows)
+	}
+	return qs
 }
 
 // Creates a new Facets object from the raw FacetCounts from Solr.

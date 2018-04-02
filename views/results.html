@@ -20,8 +20,8 @@
 
 <p>Searched for:
   <b>{{ .Q }}</b>
-  {{ if ne .Q "*" }}
-    <a href="{{ safeURL .ToUrlNoQ }}"> (remove)</a>
+  {{ if ne .Q "" }}
+    <a href="{{ safeURL .UrlNoQ }}"> (remove)</a>
   {{ end }}
   {{ range $facet := .Facets }}
     {{ range .Values }}
