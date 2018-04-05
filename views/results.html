@@ -34,11 +34,19 @@
 <p>Found: {{ .NumFound }}</p>
 <p>Start: {{ .Start }}, Rows: {{ .Rows }}</p>
 
-<ul>
-{{ range .BibRecords }}
-  <p>{{.Title}} <a href="/catalog/{{.Bib}}">link</a></p>
+<div class="items">
+{{ range .Results }}
+  <div class="item">
+  {{ range $name, $values := .Document }}
+    {{ if eq $name "id" }}
+      <p><b>ID: </b><a href="/catalog/{{$values}}">{{ $values }}</a></p>
+    {{ else }}
+      <p><b>{{ $name }}:</b> {{ $values }}</p>
+    {{ end }}
+  {{ end }}
+  </div>
 {{ end }}
-</ul>
+</div>
 
 <h2>Facets</h2>
 <ul>

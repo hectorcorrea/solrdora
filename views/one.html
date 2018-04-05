@@ -1,14 +1,17 @@
 {{ define "content" }}
-<h1>{{.Title}}</h1>
-<h2>{{.Bib}}</h1>
-<p>{{.Version}}</p>
 
-<p>Authors</p>
-<ul>
-  {{ range .Authors }}
-  <li>{{.}}
+{{ $bibRecord := . }}
+{{ range $name, $values := .Document }}
+  {{ if $bibRecord.IsMultiValue $name }}
+    <p><b>{{ $name }}:</b></p>
+    <ul>
+      {{ range $value := $values }}
+        <li>{{ $value }}
+      {{ end }}
+    </ul>
+  {{ else }}
+    <p><b>{{ $name }}:</b> {{ $values }}</p>
+  {{ end }}
 {{ end }}
-</ul>
 
-<p>this is view file</p>
 {{ end }}

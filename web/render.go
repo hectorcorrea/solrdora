@@ -48,7 +48,7 @@ func loadTemplate(s Session, viewName string) (*template.Template, error) {
 		renderError(s, fmt.Sprintf("Loading view %s", viewName), err)
 		return nil, err
 	}
-	log.Printf("Loaded template %s (%s)", viewName, "TODO s.req.URL.Path")
+	log.Printf("Loaded template %s (%s)", viewName, s.Req.URL.Path)
 	return t, nil
 }
 

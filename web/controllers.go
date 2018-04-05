@@ -12,14 +12,13 @@ func home(values RouteValues, resp http.ResponseWriter, req *http.Request) {
 }
 
 func search(values RouteValues, resp http.ResponseWriter, req *http.Request) {
-	params := solr.NewSearchParams(
+	params := solr.NewSearchParamsFromQs(
 		req.URL.Query(),
 		settings.SolrOptions,
 		settings.SolrFacets)
-
 	params.Fl = settings.SearchFl
 	cat := catalog.New(settings.SolrCoreUrl)
-	results, err := cat.Search(params)
+	results, err := cat.Search(params, "/catalog?")
 
 	s := NewSession(values, resp, req)
 	if err != nil {
@@ -31,7 +30,11 @@ func search(values RouteValues, resp http.ResponseWriter, req *http.Request) {
 
 func viewOne(values RouteValues, resp http.ResponseWriter, req *http.Request) {
 	cat := catalog.New(settings.SolrCoreUrl)
-	record, err := cat.Get(values["id"], settings.ViewOneFl)
+	params := solr.NewGetParams(
+		"id:"+values["id"],
+		settings.ViewOneFl,
+		settings.SolrOptions)
+	record, err := cat.Get(params)
 
 	s := NewSession(values, resp, req)
 	if err != nil {
