@@ -2,8 +2,8 @@ package web
 
 import (
 	"github.com/hectorcorrea/solr"
-	"gosiah/catalog"
 	"net/http"
+	"solrdora/catalog"
 )
 
 func home(values RouteValues, resp http.ResponseWriter, req *http.Request) {

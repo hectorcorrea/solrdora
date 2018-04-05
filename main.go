@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"gosiah/web"
 	"log"
 	"os"
+	"solrdora/web"
 )
 
 func main() {
