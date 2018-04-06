@@ -10,5 +10,5 @@
     "publisher_str": "Publisher"
   },
   "searchFl": ["id", "title", "subjects", "author"],
-  "xviewOneFl": ["id", "title", "authorsAll", "_version_"]
+  "viewOneFl": ["id", "title", "authorsAll", "_version_"]
 }

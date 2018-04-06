@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"solrdora/web"
 )
@@ -10,14 +9,18 @@ import (
 func main() {
 	if len(os.Args) < 2 {
 		displayHelp()
+		return
 	}
 	settingsFile := os.Args[1]
 	web.StartWebServer(settingsFile)
 }
 
 func displayHelp() {
-	sample := `{
-	  "serverUrl": "localhost:9001",
+	sample := `
+Must indicate a settings.json file with an structure like this:
+
+	{
+	  "serverAddress": "localhost:9001",
 	  "solrCoreUrl": "http://localhost:8983/solr/bibdata",
 	  "solrOptions" : {
 	    "defType": "edismax",
@@ -26,8 +29,9 @@ func displayHelp() {
 	  "solrFacets": {
 	    "subjects_str": "Subjects",
 	    "publisher_str": "Publisher"
-	  }
+	  },
+		"searchFl": ["id", "title", "subjects", "author"],
+	  "viewOneFl": ["id", "title", "authorsAll", "_version_"]
 	}`
-	msg := fmt.Sprintf("Must indicate a settings.json file with an structure like this:\r\n%s", sample)
-	log.Fatal(msg)
+	fmt.Printf("%s\r\n\r\n", sample)
 }
