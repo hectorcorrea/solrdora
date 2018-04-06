@@ -1,9 +1,8 @@
 package web
 
 import (
-	"github.com/hectorcorrea/solr"
 	"net/http"
-	"solrdora/catalog"
+	"solrdora/models"
 )
 
 func home(values RouteValues, resp http.ResponseWriter, req *http.Request) {
@@ -12,13 +11,8 @@ func home(values RouteValues, resp http.ResponseWriter, req *http.Request) {
 }
 
 func search(values RouteValues, resp http.ResponseWriter, req *http.Request) {
-	params := solr.NewSearchParamsFromQs(
-		req.URL.Query(),
-		settings.SolrOptions,
-		settings.SolrFacets)
-	params.Fl = settings.SearchFl
-	cat := catalog.New(settings.SolrCoreUrl)
-	results, err := cat.Search(params, "/catalog?")
+	search := models.NewSearch(settings)
+	results, err := search.Search(req.URL.Query(), "/search?")
 
 	s := NewSession(values, resp, req)
 	if err != nil {
@@ -29,12 +23,8 @@ func search(values RouteValues, resp http.ResponseWriter, req *http.Request) {
 }
 
 func viewOne(values RouteValues, resp http.ResponseWriter, req *http.Request) {
-	cat := catalog.New(settings.SolrCoreUrl)
-	params := solr.NewGetParams(
-		"id:"+values["id"],
-		settings.ViewOneFl,
-		settings.SolrOptions)
-	record, err := cat.Get(params)
+	search := models.NewSearch(settings)
+	record, err := search.Get(values["id"])
 
 	s := NewSession(values, resp, req)
 	if err != nil {

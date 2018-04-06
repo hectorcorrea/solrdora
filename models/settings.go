@@ -1,4 +1,4 @@
-package web
+package models
 
 import (
 	"encoding/json"

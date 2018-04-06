@@ -3,20 +3,21 @@ package web
 import (
 	"log"
 	"net/http"
+	"solrdora/models"
 )
 
 var router Router
-var settings Settings
+var settings models.Settings
 
 func init() {
-	router.Add("GET", "/catalog/:id", viewOne)
-	router.Add("GET", "/catalog", search)
+	router.Add("GET", "/view/:id", viewOne)
+	router.Add("GET", "/search", search)
 	router.Add("GET", "/", home)
 }
 
 func StartWebServer(settingsFile string) {
 	var err error
-	settings, err = LoadSettings(settingsFile)
+	settings, err = models.LoadSettings(settingsFile)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -28,7 +29,6 @@ func StartWebServer(settingsFile string) {
 	http.Handle("/favicon.ico", fs)
 	http.Handle("/robots.txt", fs)
 	http.Handle("/public/", http.StripPrefix("/public/", fs))
-	http.HandleFunc("/catalog", dispacher)
 	http.HandleFunc("/", dispacher)
 
 	err = http.ListenAndServe(settings.ServerAddress, nil)
@@ -37,6 +37,7 @@ func StartWebServer(settingsFile string) {
 	}
 }
 
+// Dispatches the request to one our custom routes
 func dispacher(resp http.ResponseWriter, req *http.Request) {
 	found, route := router.FindRoute(req.Method, req.URL.Path)
 	if found {

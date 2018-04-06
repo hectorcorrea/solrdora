@@ -20,7 +20,7 @@ func baseTemplate() *template.Template {
 
 func renderNotFound(s Session) {
 	log.Printf(fmt.Sprintf("Not found (%s)", s.Req.URL.Path))
-	t, err := baseTemplate().ParseFiles("views/layout.html", "views/notFound.html")
+	t, err := baseTemplate().ParseFiles("views/layout.html", "views/notfound.html")
 	if err != nil {
 		log.Printf("Error rendering not found page :(")
 		// perhaps render a hard coded string?

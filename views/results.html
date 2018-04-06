@@ -1,66 +1,83 @@
 {{ define "content" }}
-<h1>Search Results</h1>
+<div class="row">
+  <h1>Search Results</h1>
 
-<form action="/catalog" method="GET">
-  <input type="text" id="q" name="q" value="{{ .Q }}" placeholder="enter text" autofocus/>
-  <div style="display:none;" id="facets_form">
+  <form action="/search" method="GET">
+    <input type="text" id="q" name="q" value="{{ .Q }}" placeholder="enter text" autofocus/>
+    <div style="display:none;" id="facets_form">
+      {{ range $facet := .Facets }}
+        {{ range .Values }}
+          {{ if .Active }}
+            <input type="text" id="fq" name="fq" value="{{ $facet.Field }}|{{ .Text }}" />
+          {{ end }}
+        {{ end }}
+      {{ end }}
+    </div>
+    <button type="submit">Search</button>
+  </form>
+
+  <a href="{{ .PrevPageUrl }}">PREV</a>
+  <a href="{{ .NextPageUrl }}">NEXT</a>
+
+  <p>Searched for:
+    <b>{{ .Q }}</b>
+    {{ if ne .Q "" }}
+      <a href="{{ safeURL .UrlNoQ }}"> (remove)</a>
+    {{ end }}
     {{ range $facet := .Facets }}
       {{ range .Values }}
         {{ if .Active }}
-          <input type="text" id="fq" name="fq" value="{{ $facet.Field }}|{{ .Text }}" />
+          {{ $facet.Title }} > {{ .Text }} <a href="{{ safeURL .RemoveUrl }}">(remove)</a>
         {{ end }}
       {{ end }}
     {{ end }}
-  </div>
-  <button type="submit">Search</button>
-</form>
-
-<a href="{{ .PrevPageUrl }}">PREV</a>
-<a href="{{ .NextPageUrl }}">NEXT</a>
-
-<p>Searched for:
-  <b>{{ .Q }}</b>
-  {{ if ne .Q "" }}
-    <a href="{{ safeURL .UrlNoQ }}"> (remove)</a>
-  {{ end }}
-  {{ range $facet := .Facets }}
-    {{ range .Values }}
-      {{ if .Active }}
-        {{ $facet.Title }} > {{ .Text }} <a href="{{ safeURL .RemoveUrl }}">(remove)</a>
-      {{ end }}
-    {{ end }}
-  {{ end }}
-</p>
-<p>Found: {{ .NumFound }}</p>
-<p>Start: {{ .Start }}, Rows: {{ .Rows }}</p>
-
-<div class="items">
-{{ range .Results }}
-  <div class="item">
-  {{ range $name, $values := .Document }}
-    {{ if eq $name "id" }}
-      <p><b>ID: </b><a href="/catalog/{{$values}}">{{ $values }}</a></p>
-    {{ else }}
-      <p><b>{{ $name }}:</b> {{ $values }}</p>
-    {{ end }}
-  {{ end }}
-  </div>
-{{ end }}
+  </p>
+  <p>Found: {{ .NumFound }}</p>
+  <p>Start: {{ .Start }}, Rows: {{ .Rows }}</p>
 </div>
 
-<h2>Facets</h2>
-<ul>
-  {{ range $facet := .Facets }}
-  <p><b>{{ .Title }}</b> ({{ .Field }})</p>
-    {{ range .Values }}
-      <p>
-        {{ if .Active }}
-          {{ .Text }}, {{ .Count }} <a href="{{ safeURL .RemoveUrl }}">(remove)</a>
-        {{ else }}
-          <a href="{{ safeURL .AddUrl }}">{{ .Text }}, {{ .Count }} </a>
-        {{ end }}
-      </p>
+<div class="row">
+  <!-- facets -->
+  <div class="col-md-4">
+    {{ range $facet := .Facets }}
+      <div class="panel panel-info">
+        <div class="panel-heading">
+          <h3 class="panel-title">{{ .Title }} ({{ .Field }})</h3>
+        </div>
+        <div class="panel-body">
+          <ul class="list-group">
+            {{ range .Values }}
+              {{ if .Active }}
+                <li class="list-group-item">
+                  <span class="badge">{{ .Count }}</span>
+                  {{ .Text }} <a href="{{ safeURL .RemoveUrl }}">(remove)</a>
+              {{ else }}
+                <li class="list-group-item">
+                  <span class="badge">{{ .Count }}</span>
+                  <a href="{{ safeURL .AddUrl }}">{{ .Text }}</a>
+              {{ end }}
+            {{ end }}
+          </ul>
+        </div>
+      </div>
     {{ end }}
-  {{ end }}
-</ul>
+  </div> <!-- col-md-4 -->
+
+  <!-- results -->
+  <div class="col-md-8">
+    <div class="list-group">
+      {{ range .Results }}
+        <div class="list-group-item">
+          <p><a href="/view/{{ .Id }}">{{ .Id }}</a></p>
+          {{ range $name, $values := .Document }}
+            {{ if ne $name "id" }}
+              <p><b>{{ $name }}:</b> {{ $values }}</p>
+            {{ end }}
+          {{ end }}
+        </div>
+      {{ end }}
+    </div>
+  </div> <!-- col-md-8 -->
+</div>
+
 {{ end }}

@@ -1,12 +1,9 @@
 {{ define "content" }}
-<h1>Gosiah (Josiah in Go)</h1>
-
-<form action="/catalog" method="GET">
-
-  <input type="text" id="q" name="q" value="" placeholder="enter text" autofocus/>
-  <button type="submit">Search</button>
-
-</form>
-
-<p>this is view file</p>
+<div class="row">
+  <h1>Search</h1>
+  <form action="/search" method="GET">
+    <input type="text" id="q" name="q" value="" placeholder="enter text" autofocus/>
+    <button type="submit">Search</button>
+  </form>
+</div>
 {{ end }}
