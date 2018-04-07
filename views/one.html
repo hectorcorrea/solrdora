@@ -1,17 +1,33 @@
 {{ define "content" }}
+<style>
+/* https://stackoverflow.com/a/22955585/446681 */
+.input-group{
+    width: 100%;
+}
+.input-group-addon{
+    width: 15%;
+    text-align: left;
+}
+.form-control {
+    width: 85%;
+}
+</style>
 
-{{ $bibRecord := . }}
-{{ range $name, $values := .Document }}
-  {{ if $bibRecord.IsMultiValue $name }}
-    <p><b>{{ $name }}:</b></p>
-    <ul>
-      {{ range $value := $values }}
-        <li>{{ $value }}
-      {{ end }}
-    </ul>
-  {{ else }}
-    <p><b>{{ $name }}:</b> {{ $values }}</p>
-  {{ end }}
-{{ end }}
-
+<div class="row">
+  <div class="col-md-12">
+    {{ $record := . }}
+    {{ range $field, $values := .Document }}
+      <div class="input-group">
+        <span class="input-group-addon" id="basic-addon1">{{ $field }}</span>
+        {{ if $record.IsMultiValue $field }}
+          {{ range $value := $values }}
+            <input type="text" value="{{ $value }}" class="form-control" placeholder="Username" aria-describedby="basic-addon1">
+          {{ end }}
+        {{ else }}
+          <input type="text" value="{{ $values }}" class="form-control" placeholder="Username" aria-describedby="basic-addon1">
+        {{ end }}
+      </div>
+    {{ end }}
+  </div> <!-- col-md-12 -->
+</div>
 {{ end }}

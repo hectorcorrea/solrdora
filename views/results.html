@@ -1,70 +1,69 @@
 {{ define "content" }}
 <div class="row">
-  <h1>Search Results</h1>
-
-  <form action="/search" method="GET">
-    <input type="text" id="q" name="q" value="{{ .Q }}" placeholder="enter text" autofocus/>
-    <div style="display:none;" id="facets_form">
+  <div class="col-md-4">
+    <form action="/search" method="GET">
+      <input type="text" id="q" name="q" value="{{ .Q }}" placeholder="enter text" autofocus/>
+      <div style="display:none;" id="facets_form">
+        {{ range $facet := .Facets }}
+          {{ range .Values }}
+            {{ if .Active }}
+              <input type="text" id="fq" name="fq" value="{{ $facet.Field }}|{{ .Text }}" />
+            {{ end }}
+          {{ end }}
+        {{ end }}
+      </div>
+      <button type="submit">Search</button>
+    </form>
+  </div>
+  <div class="col-md-8">
+    <p>Searched for:
+      <b>{{ .Q }}</b>
+      {{ if ne .Q "" }}
+        <a href="{{ safeURL .UrlNoQ }}"> (remove)</a>
+      {{ end }}
       {{ range $facet := .Facets }}
         {{ range .Values }}
           {{ if .Active }}
-            <input type="text" id="fq" name="fq" value="{{ $facet.Field }}|{{ .Text }}" />
+            {{ $facet.Title }} > {{ .Text }} <a href="{{ safeURL .RemoveUrl }}">(remove)</a>
           {{ end }}
         {{ end }}
       {{ end }}
-    </div>
-    <button type="submit">Search</button>
-  </form>
-
-  <a href="{{ .PrevPageUrl }}">PREV</a>
-  <a href="{{ .NextPageUrl }}">NEXT</a>
-
-  <p>Searched for:
-    <b>{{ .Q }}</b>
-    {{ if ne .Q "" }}
-      <a href="{{ safeURL .UrlNoQ }}"> (remove)</a>
-    {{ end }}
-    {{ range $facet := .Facets }}
-      {{ range .Values }}
-        {{ if .Active }}
-          {{ $facet.Title }} > {{ .Text }} <a href="{{ safeURL .RemoveUrl }}">(remove)</a>
-        {{ end }}
-      {{ end }}
-    {{ end }}
-  </p>
-  <p>Found: {{ .NumFound }}</p>
-  <p>Start: {{ .Start }}, Rows: {{ .Rows }}</p>
+    </p>
+  </div>
 </div>
 
 <div class="row">
-  <!-- facets -->
   <div class="col-md-4">
+    <!-- facets -->
     {{ range $facet := .Facets }}
       <div class="panel panel-info">
         <div class="panel-heading">
-          <h3 class="panel-title">{{ .Title }} ({{ .Field }})</h3>
+          <h3 class="panel-title">{{ .Title }}</h3>
         </div>
         <div class="panel-body">
-          <ul class="list-group">
-            {{ range .Values }}
-              {{ if .Active }}
-                <li class="list-group-item">
-                  <span class="badge">{{ .Count }}</span>
-                  {{ .Text }} <a href="{{ safeURL .RemoveUrl }}">(remove)</a>
-              {{ else }}
-                <li class="list-group-item">
-                  <span class="badge">{{ .Count }}</span>
-                  <a href="{{ safeURL .AddUrl }}">{{ .Text }}</a>
-              {{ end }}
+          {{ range .Values }}
+            <p>
+            {{ if .Active }}
+                <span class="badge" style="float: right;">{{ .Count }}</span>
+                {{ .Text }} <a href="{{ safeURL .RemoveUrl }}">(remove)</a>
+            {{ else }}
+                <span class="badge" style="float: right;">{{ .Count }}</span>
+                <a href="{{ safeURL .AddUrl }}">{{ .Text }}</a>
             {{ end }}
-          </ul>
+            </p>
+          {{ end }}
         </div>
       </div>
     {{ end }}
-  </div> <!-- col-md-4 -->
-
-  <!-- results -->
+  </div>
   <div class="col-md-8">
+    <div class="btn-group" role="group" aria-label="...">
+      <a class="btn btn-default" href="{{ .PrevPageUrl }}">Previous</a>
+      <a class="btn btn-default">{{ .Start }} - {{ .Rows }} of {{ .NumFound }}</a>
+      <a class="btn btn-default" href="{{ .NextPageUrl }}">Next</a>
+    </div>
+    <div>&nbsp;</div>
+
     <div class="list-group">
       {{ range .Results }}
         <div class="list-group-item">
@@ -77,7 +76,8 @@
         </div>
       {{ end }}
     </div>
-  </div> <!-- col-md-8 -->
+
+  </div>
 </div>
 
 {{ end }}
