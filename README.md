@@ -22,7 +22,7 @@ The main components of the code are:
 To get started
 
 ```
-git clone https://github.com/hectorcorrea/solr.git
+git clone https://github.com/hectorcorrea/solrdora.git
 cd solrdora
 go get
 go build
