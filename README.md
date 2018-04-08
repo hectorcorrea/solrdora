@@ -57,3 +57,9 @@ repo is a good place to start.
 * `solrFacets` is the list of fields that you want to use for facets. In the previous example we defined two fields "subjects_str" and "publisher_str". The syntax is `"field_name" : "Display Value"`
 * `searchFl` defines the names of the fields that will be fetched from Solr (fl) during the search.
 * `viewOneFl` defines the names of the fields that will be fetched from Solr (fl) when fetching the details of a document.
+
+
+## Executable
+If you don't care about the source code,
+[download the executable](https://github.com/hectorcorrea/solrdora/releases)
+for your operating system, and follow the instructions on Release tab.
