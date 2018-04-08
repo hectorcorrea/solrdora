@@ -5,6 +5,8 @@ The core of the Solr functionality is provided by
 [this other Go package](https://github.com/hectorcorrea/solr). What SolrDora
 does is put a web user interface on top of it.
 
+See a [screenshot of what it looks like](https://github.com/hectorcorrea/solrdora/raw/master/misc/screenshot.png) once it's running.
+
 
 ## Source Code
 The main components of the code are:
