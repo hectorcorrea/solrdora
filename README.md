@@ -58,6 +58,8 @@ repo is a good place to start.
 * `searchFl` defines the names of the fields that will be fetched from Solr (fl) during the search.
 * `viewOneFl` defines the names of the fields that will be fetched from Solr (fl) when fetching the details of a document.
 
+This program expects Solr's responses to be in JSON. If you Solr core does not return JSON by default (i.e. if you are using an old version of Solr), make sure to add `"wt":"json"` to `solrOptions` to request JSON as the output format.
+
 
 ## Executable
 If you don't care about the source code,
