@@ -4,6 +4,10 @@
     <form action="/search" method="GET">
       <input type="text" id="q" name="q" value="{{ .Q }}" placeholder="enter text" autofocus/>
       <div style="display:none;" id="facets_form">
+        <!-- reset paging when submitting a new search -->
+        <input type="text" id="start" name="start" value="0" />
+        <input type="text" id="rows" name="rows" value="10" />
+        <!-- preserve the facets when submitting a new search -->
         {{ range $facet := .Facets }}
           {{ range .Values }}
             {{ if .Active }}
