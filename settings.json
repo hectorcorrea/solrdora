@@ -4,7 +4,8 @@
   "solrOptions" : {
     "defType": "edismax",
     "qf": "authorsAll title^100",
-    "facet.limit": "20"
+    "facet.limit": "20",
+    "facet.mincount": "1"
   },
   "solrFacets": {
     "subjects_str": "Subjects",
