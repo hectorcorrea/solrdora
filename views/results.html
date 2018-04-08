@@ -16,19 +16,17 @@
     </form>
   </div>
   <div class="col-md-8">
-    <p>Searched for:
-      <b>{{ .Q }}</b>
-      {{ if ne .Q "" }}
-        <a href="{{ safeURL .UrlNoQ }}"> (remove)</a>
-      {{ end }}
-      {{ range $facet := .Facets }}
-        {{ range .Values }}
-          {{ if .Active }}
-            {{ $facet.Title }} > {{ .Text }} <a href="{{ safeURL .RemoveUrl }}">(remove)</a>
-          {{ end }}
+    {{ if ne .Q "" }}
+      <p>Searched for:<b> {{ .Q }}</b><a href="{{ safeURL .UrlNoQ }}"> (remove)</a></p>
+    {{ end }}
+    {{ range $facet := .Facets }}
+      {{ range .Values }}
+        {{ if .Active }}
+          <p>{{ $facet.Title }} > {{ .Text }} <a href="{{ safeURL .RemoveUrl }}">(remove)</a></p>
         {{ end }}
       {{ end }}
-    </p>
+    {{ end }}
+    <p>Found: {{ .NumFound }}, showing {{ .First }} - {{ .Last }}</p>
   </div>
 </div>
 
@@ -57,10 +55,10 @@
     {{ end }}
   </div>
   <div class="col-md-8">
+    <!-- TODO disable prev/next based on current page and num found -->
     <div class="btn-group" role="group" aria-label="...">
-      <a class="btn btn-default" href="{{ .PrevPageUrl }}">Previous</a>
-      <a class="btn btn-default">{{ .Start }} - {{ .Rows }} of {{ .NumFound }}</a>
-      <a class="btn btn-default" href="{{ .NextPageUrl }}">Next</a>
+      <a class="btn btn-default" href="{{ .PrevPageUrl }}" title="View previous {{ .Rows }}">Previous</a>
+      <a class="btn btn-default" href="{{ .NextPageUrl }}" title="View next {{ .Rows }}">Next</a>
     </div>
     <div>&nbsp;</div>
 

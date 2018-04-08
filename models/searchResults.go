@@ -17,6 +17,8 @@ type SearchResults struct {
 	NumFound    int
 	Start       int
 	Rows        int
+	First       int
+	Last        int
 	Url         string
 	UrlNoQ      string
 	NextPageUrl string
@@ -34,6 +36,13 @@ func NewSearchResults(resp solr.SearchResponse, baseUrl string) SearchResults {
 		NextPageUrl: baseUrl + resp.NextPageUrl,
 	}
 
+	if results.NumFound > 0 {
+		results.First = results.Start + 1
+		results.Last = results.First + results.Rows
+		if results.Last > results.NumFound {
+			results.Last = results.NumFound
+		}
+	}
 	results.Facets.SetAddRemoveUrls(results.Url)
 
 	if resp.Q != "*" {
