@@ -5,6 +5,11 @@ import (
 	"solrdora/models"
 )
 
+func about(values RouteValues, resp http.ResponseWriter, req *http.Request) {
+	s := NewSession(values, resp, req)
+	renderTemplate(s, "views/about.html", settings)
+}
+
 func home(values RouteValues, resp http.ResponseWriter, req *http.Request) {
 	s := NewSession(values, resp, req)
 	renderTemplate(s, "views/index.html", nil)

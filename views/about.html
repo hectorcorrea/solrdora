@@ -1,0 +1,30 @@
+{{ define "content" }}
+<div class="row">
+  <h1>About SolrDora</h1>
+  <p>This is a demo program to explore the data in a Solr core. The source code is
+    written in Go and it's
+    <a href="https://github.com/hectorcorrea/solrdora" target="_blank">available for free on GitHub</a>.
+  </p>
+
+  <h3>Settings</h3>
+  <p>Currently using the following settings</p>
+
+  <ul>
+  <li><b>Solr Core: </b>{{ .SolrCoreUrl }}
+  </ul>
+
+  <h4>Solr Options</h4>
+  <ul>
+    {{ range $k, $v := .SolrOptions }}
+      <li><b>{{ $k }}: </b> {{ $v }}
+    {{ end }}
+  </ul>
+
+  <h4>Facets</h4>
+  <ul>
+    {{ range $k, $v := .SolrFacets }}
+      <li><b>{{ $k }}: </b> {{ $v }}
+    {{ end }}
+  </ul>
+</div>
+{{ end }}

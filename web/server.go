@@ -11,6 +11,7 @@ var settings models.Settings
 
 func init() {
 	router.Add("GET", "/view/:id", viewOne)
+	router.Add("GET", "/about", about)
 	router.Add("GET", "/search", search)
 	router.Add("GET", "/", home)
 }
