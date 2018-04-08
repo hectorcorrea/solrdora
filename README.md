@@ -11,9 +11,10 @@ The main components of the code are:
 
 * `main.go`: The launcher.
 * `web/server.go`: The web server.
-* `web/controllers.go`: The controllers are very skinny, they are barely as pass-through from the HTTP request to the model.
-* `models/search.go`: Is the bulk of the search functionality, it calls the Go library that submits the request to Solr and uses `models/searchResult.go` to format the results in a way that can be used in the views.
+* `web/controllers.go`: The controllers are very skinny, they are a pass-through from the HTTP request to the model.
+* `models/search.go`: This is the core search functionality, it calls the Go library that submits the request to Solr and uses `models/searchResult.go` to format the results in a way that can be used in the views.
 * `views/`: The HTML views.
+
 
 ## Compiling and running
 To get started
