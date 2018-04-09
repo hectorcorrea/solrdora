@@ -1,4 +1,9 @@
 {{ define "content" }}
+<style>
+  em {
+    background: #e9e91966;
+  }
+</style>
 <div class="row">
   <div class="col-md-4">
     <form action="/search" method="GET">
@@ -58,6 +63,7 @@
       </div>
     {{ end }}
   </div>
+
   <div class="col-md-8">
     <!-- TODO disable prev/next based on current page and num found -->
     <div class="btn-group" role="group" aria-label="...">
@@ -66,13 +72,20 @@
     </div>
     <div>&nbsp;</div>
 
+    <!-- search results -->
     <div class="list-group">
+      {{ $results := . }}
       {{ range .Results }}
         <div class="list-group-item">
+          {{ $id := .Id }}
           <p><a href="/view/{{ .Id }}">{{ .Id }}</a></p>
           {{ range $name, $values := .Document }}
             {{ if ne $name "id" }}
-              <p><b>{{ $name }}:</b> {{ $values }}</p>
+              {{ if $results.IsHit $id $name }}
+                <p><b>{{ $name }}:</b> {{ $results.Hit $id $name }}</p>
+              {{ else }}
+                <p><b>{{ $name }}:</b> {{ $values }}</p>
+              {{ end }}
             {{ end }}
           {{ end }}
         </div>

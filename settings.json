@@ -5,12 +5,13 @@
     "defType": "edismax",
     "qf": "authorsAll title^100",
     "facet.limit": "20",
-    "facet.mincount": "1"
+    "facet.mincount": "1",
+    "hl": "on"
   },
   "solrFacets": {
     "subjects_str": "Subjects",
     "publisher_str": "Publisher"
   },
-  "searchFl": ["id", "title", "subjects", "author"],
-  "viewOneFl": ["id", "title", "authorsAll", "subjects"]
+  "searchFl": ["id", "title", "subjects", "authorsAll"],
+  "viewOneFl": ["id", "title", "authorsAll", "subjects", "publisher"]
 }

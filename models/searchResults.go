@@ -3,7 +3,9 @@ package models
 import (
 	"fmt"
 	"github.com/hectorcorrea/solr"
+	"html/template"
 	"reflect"
+	"strings"
 )
 
 type Result struct {
@@ -23,6 +25,7 @@ type SearchResults struct {
 	UrlNoQ      string
 	NextPageUrl string
 	PrevPageUrl string
+	Response    solr.SearchResponse
 }
 
 func NewSearchResults(resp solr.SearchResponse, baseUrl string) SearchResults {
@@ -34,6 +37,7 @@ func NewSearchResults(resp solr.SearchResponse, baseUrl string) SearchResults {
 		Url:         baseUrl + resp.Url,
 		PrevPageUrl: baseUrl + resp.PrevPageUrl,
 		NextPageUrl: baseUrl + resp.NextPageUrl,
+		Response:    resp,
 	}
 
 	if results.NumFound > 0 {
@@ -69,4 +73,13 @@ func (r Result) IsMultiValue(field string) bool {
 
 func (r Result) Id() string {
 	return fmt.Sprintf("%s", r.Document["id"])
+}
+
+func (r SearchResults) Hit(id, field string) template.HTML {
+	values := r.Response.HitsForField(id, field)
+	return template.HTML(strings.Join(values, " "))
+}
+
+func (r SearchResults) IsHit(id, field string) bool {
+	return r.Response.IsHitField(id, field)
 }
