@@ -5,7 +5,7 @@ The core of the Solr functionality is provided by
 [this other Go package](https://github.com/hectorcorrea/solr). What SolrDora
 does is put a web user interface on top of it.
 
-See a [screenshot of what it looks like](https://github.com/hectorcorrea/solrdora/raw/a75fb908c5fc325ca70e0870a3a9471c4d5a6953/misc/screenshot.png) once it's running.
+See a [screenshot of what it looks like](https://github.com/hectorcorrea/solrdora/blob/master/misc/screenshot.png) once it's running.
 
 
 ## Source Code
@@ -40,7 +40,10 @@ repo is a good place to start.
   "solrCoreUrl": "http://localhost:8983/solr/bibdata",
   "solrOptions" : {
     "defType": "edismax",
-    "qf": "authorsAll title^100"
+    "qf": "authorsAll title^100",
+    "facet.limit": "20",
+    "facet.mincount": "1",
+    "hl": "on"
   },
   "solrFacets": {
     "subjects_str": "Subjects",
