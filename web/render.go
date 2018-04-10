@@ -11,9 +11,8 @@ func baseTemplate() *template.Template {
 	// A template with our helper functions
 	t := template.New("layout")
 	t.Funcs(template.FuncMap{
-		"safeURL": func(u string) template.URL { return template.URL(u) },
-		"concat":  func(a, b string) string { return a + b },
-		"concat3": func(a, b, c string) string { return a + b + c },
+		"safeHTML": func(s string) template.HTML { return template.HTML(s) },
+		"safeURL":  func(u string) template.URL { return template.URL(u) },
 	})
 	return t
 }

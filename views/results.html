@@ -74,15 +74,14 @@
 
     <!-- search results -->
     <div class="list-group">
-      {{ $results := . }}
-      {{ range .Results }}
+      {{ range .Documents }}
         <div class="list-group-item">
-          {{ $id := .Id }}
+          {{ $doc := . }}
           <p><a href="/view/{{ .Id }}">{{ .Id }}</a></p>
-          {{ range $name, $values := .Document }}
+          {{ range $name, $values := .Data }}
             {{ if ne $name "id" }}
-              {{ if $results.IsHit $id $name }}
-                <p><b>{{ $name }}:</b> {{ $results.Hit $id $name }}</p>
+              {{ if $doc.IsHighlighted $name }}
+                <p><b>{{ $name }}:</b> {{ $doc.HighlightFor $name | safeHTML }}</p>
               {{ else }}
                 <p><b>{{ $name }}:</b> {{ $values }}</p>
               {{ end }}

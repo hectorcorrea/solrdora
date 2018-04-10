@@ -13,14 +13,14 @@ func NewSearch(settings Settings) Search {
 	return Search{settings: settings}
 }
 
-func (search Search) Get(id string) (Result, error) {
+func (search Search) Get(id string) (solr.Document, error) {
 	params := solr.NewGetParams("id:"+id, search.settings.ViewOneFl, search.settings.SolrOptions)
-	solr := solr.New(search.settings.SolrCoreUrl, true)
-	doc, err := solr.Get(params)
+	s := solr.New(search.settings.SolrCoreUrl, true)
+	doc, err := s.Get(params)
 	if err != nil {
-		return Result{}, err
+		return solr.Document{}, err
 	}
-	return NewResult(doc), nil
+	return doc, nil
 }
 
 func (search Search) Search(qs url.Values, baseUrl string) (SearchResults, error) {

@@ -1,20 +1,12 @@
 package models
 
 import (
-	"fmt"
 	"github.com/hectorcorrea/solr"
-	"html/template"
-	"reflect"
-	"strings"
 )
-
-type Result struct {
-	Document solr.Document
-}
 
 type SearchResults struct {
 	Q           string
-	Results     []Result
+	Documents   []solr.Document
 	Facets      solr.Facets
 	NumFound    int
 	Start       int
@@ -38,6 +30,7 @@ func NewSearchResults(resp solr.SearchResponse, baseUrl string) SearchResults {
 		PrevPageUrl: baseUrl + resp.PrevPageUrl,
 		NextPageUrl: baseUrl + resp.NextPageUrl,
 		Response:    resp,
+		Documents:   resp.Documents,
 	}
 
 	if results.NumFound > 0 {
@@ -54,32 +47,5 @@ func NewSearchResults(resp solr.SearchResponse, baseUrl string) SearchResults {
 		results.UrlNoQ = baseUrl + resp.UrlNoQ
 	}
 
-	for _, doc := range resp.Documents {
-		record := NewResult(doc)
-		results.Results = append(results.Results, record)
-	}
-
 	return results
-}
-
-func NewResult(doc solr.Document) Result {
-	return Result{Document: doc}
-}
-
-func (r Result) IsMultiValue(field string) bool {
-	value := reflect.ValueOf(r.Document[field])
-	return value.Kind() == reflect.Slice
-}
-
-func (r Result) Id() string {
-	return fmt.Sprintf("%s", r.Document["id"])
-}
-
-func (r SearchResults) Hit(id, field string) template.HTML {
-	values := r.Response.HitsForField(id, field)
-	return template.HTML(strings.Join(values, " "))
-}
-
-func (r SearchResults) IsHit(id, field string) bool {
-	return r.Response.IsHitField(id, field)
 }

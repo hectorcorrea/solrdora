@@ -15,16 +15,12 @@
 
 <div class="row">
   <div class="col-md-12">
-    {{ $record := . }}
-    {{ range $field, $values := .Document }}
+    {{ $doc := . }}
+    {{ range $field, $x := $doc.Data }}
       <div class="input-group">
-        <span class="input-group-addon" id="basic-addon1">{{ $field }}</span>
-        {{ if $record.IsMultiValue $field }}
-          {{ range $value := $values }}
-            <input type="text" value="{{ $value }}" class="form-control" placeholder="Username" aria-describedby="basic-addon1">
-          {{ end }}
-        {{ else }}
-          <input type="text" value="{{ $values }}" class="form-control" placeholder="Username" aria-describedby="basic-addon1">
+        <span class="input-group-addon">{{ $field }}</span>
+        {{ range $value := $doc.Values $field  }}
+          <input type="text" value="{{ $value }}" class="form-control">
         {{ end }}
       </div>
     {{ end }}
