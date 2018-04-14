@@ -3,7 +3,8 @@
   "solrCoreUrl": "http://localhost:8983/solr/bibdata",
   "solrOptions" : {
     "defType": "edismax",
-    "qf": "authorsAll title^100",
+    "qf": "authorsAll title^100 subjects",
+    "wt": "json",
     "facet.limit": "20",
     "facet.mincount": "1",
     "hl": "on"
