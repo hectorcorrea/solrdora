@@ -3,16 +3,17 @@
   "solrCoreUrl": "http://localhost:8983/solr/bibdata",
   "solrOptions" : {
     "defType": "edismax",
-    "qf": "authorsAll title^100 subjects",
+    "qf": "authors_all_txts_en title_txt_en^100 subjects_txts_en",
     "wt": "json",
     "facet.limit": "20",
     "facet.mincount": "1",
     "hl": "on"
   },
   "solrFacets": {
-    "subjects_str": "Subjects",
-    "publisher_str": "Publisher"
+    "subjects_ss": "3|Subject",
+    "publisher_s": "2|Publisher",
+    "title_s": "1|Title"
   },
-  "searchFl": ["id", "title", "subjects", "authorsAll"],
-  "viewOneFl": ["id", "title", "authorsAll", "subjects", "publisher"]
+  "searchFl": ["id", "title_txt_en", "subjects_txts_en", "authors_all_txts_en"],
+  "viewOneFl": ["id", "title_txt_en", "authors_all_txts_en", "subjects_txts_en", "publisher_txt_en"]
 }
