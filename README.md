@@ -46,13 +46,15 @@ repo is a good place to start.
     "hl": "on"
   },
   "solrFacets": {
-    "subjects_str": "Subjects",
-    "publisher_str": "Publisher"
+    "subjects_str": "1|Subjects",
+    "publisher_str": "2|Publisher"
   },
   "searchFl": ["id", "title", "subjects", "author"],
   "viewOneFl": ["id", "title", "authorsAll", "subjects"]
 }
 ```
+
+The format for `solrFacets` is `"field_name" : "display title"`, notice that you can force the order of the facets by prefixing the display value with a number (e.g. "1|Subjects").
 
 * `serverAddress` is the address at which SolrDora will run on your local box. Do not prepend "http" to this setting.
 * `solrCoreUrl` is the URL of the Solr core that you want to connect to.
