@@ -40,17 +40,18 @@ repo is a good place to start.
   "solrCoreUrl": "http://localhost:8983/solr/bibdata",
   "solrOptions" : {
     "defType": "edismax",
-    "qf": "authorsAll title^100",
+    "qf": "author_txt_en title_txt_en^100",
+    "wt": "json",
     "facet.limit": "20",
     "facet.mincount": "1",
     "hl": "on"
   },
   "solrFacets": {
-    "subjects_str": "1|Subjects",
-    "publisher_str": "2|Publisher"
+    "subjects_ss": "1|Subject",
+    "publisher_name_s": "2|Publisher"
   },
-  "searchFl": ["id", "title", "subjects", "author"],
-  "viewOneFl": ["id", "title", "authorsAll", "subjects"]
+  "searchFl": ["id", "title_txt_en", "author_txt_en"],
+  "viewOneFl": ["id", "title_txt_en", "author_txt_en", "authors_other_txts_en", "subjects_ss", "publisher_name_s", "publisher_place_s"]
 }
 ```
 
